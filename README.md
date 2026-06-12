@@ -1,2 +1,3 @@
-# SooperViewToo
-Cross Platform Version of SooperView
+# sooperview
+
+A new Flutter project.

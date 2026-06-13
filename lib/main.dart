@@ -47,6 +47,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
   bool _isEncoding = false;
   String _status = 'Select a video file';
   String? _outputPath;
+  int _totalFrames = 0;
   FFmpegSession? ffmpeg;
 
   double _progressPercentage = -1;
@@ -92,8 +93,10 @@ class SooperViewMainState extends State<SooperViewScreen> {
     setState(() => _isEncoding = true);
 
     //await pickOutputDir();
-
-    await FFprobeKit.executeAsync(FfmpegArgumentBuilder.buildFfprobeArguments(_selectedFile!.path), onComplete: (session) async {
+    var cmd = FfmpegArgumentBuilder.buildFfprobeArguments(_selectedFile!.path);
+    await FFprobeKit.getMediaInformationAsync("'${_selectedFile!.path}'", onComplete: (session) async {
+    //await FFprobeKit.executeAsync(cmd, onComplete: (session) async {
+      print(session.command);
       final result = session.getLogsAsString();
       print(result);
 
@@ -103,6 +106,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
         throw const FormatException("No valid JSON block found in output string.");
       }
       final metadata = VideoProperties.fromFfprobeJson(match);
+      _totalFrames = metadata.totalFrames;
       print("${metadata.width}x${metadata.height} | ${metadata.duration}");
       var mapLoc = await RemapFileGenerator().generateCrossPlatformRemapFiles(metadata);
       print(mapLoc["xmap"]);
@@ -143,7 +147,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
       }, statisticsCallback: (statistics) async {
         print(statistics.transcodingProgressPercent);
         setState(() {
-          _progressPercentage = (statistics.transcodingProgress! * 100);
+          _progressPercentage = ((statistics.videoFrameNumber / _totalFrames) * 100);
         });
       },);
     });
@@ -350,7 +354,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
                 ],
                 if (_progressPercentage > -1) ...[
                   const SizedBox(height: 20),
-                  Text("Progress: $_progressPercentage%"),
+                  Text("Progress: ${_progressPercentage.toStringAsFixed(2)}%"),
                 ],
                 if (ffmpeg != null) ...[
                   const SizedBox(height: 20),

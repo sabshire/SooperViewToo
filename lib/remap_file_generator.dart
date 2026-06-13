@@ -10,11 +10,13 @@ class VideoProperties {
   final int width;
   final int height;
   final double duration;
+  final int totalFrames;
 
   VideoProperties({
     required this.width,
     required this.height,
-    required this.duration
+    required this.duration,
+    required this.totalFrames
   });
 
   /// Creates VideoProperties from a direct JSON object (e.g., from ffprobe output)
@@ -31,6 +33,7 @@ class VideoProperties {
       height: json['height'] as int,
       // Parse string duration securely into a double
       duration: double.tryParse(json['duration']?.toString() ?? '0.0') ?? 0.0,
+      totalFrames: json["nb_frames"] as int
     );
   }
 
@@ -55,20 +58,22 @@ class VideoProperties {
     int? width;
     int? height;
     double? duration;
+    int? totalFrames;
 
     if (streams != null) {
       for (final stream in streams) {
         final s = stream as Map<String, dynamic>;
-        if (s.containsKey('width') && s.containsKey('height')) {
+        if (s.containsKey('width') && s.containsKey('height') && s.containsKey('nb_frames')) {
           width = s['width'];
           height = s['height'];
           duration = double.tryParse(s['duration'].toString());
+          totalFrames = int.tryParse(s['nb_frames']);
           break;
         }
       }
     }
 
-    if (width == null || height == null || duration == null) {
+    if (width == null || height == null || duration == null || totalFrames == null) {
       throw FormatException(
         "No video stream with width and height found in ffprobe output.",
       );
@@ -77,7 +82,8 @@ class VideoProperties {
     return VideoProperties(
       width: width,
       height: height,
-      duration: duration!,
+      totalFrames: totalFrames,
+      duration: duration,
     );
   }
 }
@@ -176,7 +182,7 @@ class RemapFileGenerator {
       }
       
     } catch (exception, stackTrace) {
-
+      
     }
   }
 

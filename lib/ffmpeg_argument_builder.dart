@@ -256,14 +256,16 @@ class FfmpegArgumentBuilder {
         return "1920"; // Default just in case
     }
   }
-
+  // -v error -hide_banner -print_format json -show_format -show_streams -show_chapters -i 'C:\Users\Stacey Abshire\Videos\djio3\2026\04\18\DJI_0118.MP4'
   static String buildFfprobeArguments(String filePath) =>
-      '-i "$filePath" -show_entries stream=width,height,duration -of json';
+      "-i ${wrapPathInQuotes(filePath)} -show_entries stream=width,height,duration -of json";
 
   static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath, String resolution, String hardware, String encoderType, String colorspace) async { // TODO Move some of these variables to this class
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, "sooperview-temp.mp4");
 
-    return "-y -i $sourceFile -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(resolution)}:${GetHeight(resolution)} ${encoderSettings[(hardware, encoderType)]} ${GetCRFArgument(hardware)} ${GetPresetArgument(hardware, encoderType)} ${GetPixelFormat(colorspace)} ${path}";
+    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(resolution)}:${GetHeight(resolution)} ${encoderSettings[(hardware, encoderType)]} ${GetCRFArgument(hardware)} ${GetPresetArgument(hardware, encoderType)} ${GetPixelFormat(colorspace)} ${path}";
   }
+
+  static String wrapPathInQuotes(String path) => "'$path'";
 }

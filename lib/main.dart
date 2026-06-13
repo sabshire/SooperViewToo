@@ -10,6 +10,10 @@ import 'package:open_file_manager/open_file_manager.dart';
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/remap_file_generator.dart';
+// UI imports
+import 'package:sooperview/ui/sooper_dropdown.dart';
+import 'package:sooperview/ui/sooper_labelwidget.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -195,8 +199,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
   String _selectedColorspace = "8-bit";
   final List<String> _colorspaceItems = ["8-bit", "10-bit"];
 
-  String _selectedPreset = "medium";
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,54 +219,32 @@ class SooperViewMainState extends State<SooperViewScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300, width: 1.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: DropdownButton<String>(
-                          value: _selectedHardware,
-                          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                          hint: const Text("Processor", style: TextStyle(fontStyle: FontStyle.italic)),
-                          isExpanded: true,
-                          items: FfmpegArgumentBuilder.GetAvailableHardwareList().map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 14)),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() => _selectedHardware = value ?? 'CPU');
+                      child: SooperLabel(
+                        label: "Hardware",
+                        child: SooperDropdown(
+                          dropdownValue: _selectedHardware, 
+                          dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
+                          onStateChanged: (hardwareValue) {
+                            setState(() {
+                              _selectedHardware = hardwareValue ?? 'CPU';
+                            });
                           },
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300, width: 1.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: DropdownButton<String>(
-                          value: _selectedEncoder,
-                          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                          hint: const Text("Encoder", style: TextStyle(fontStyle: FontStyle.italic)),
-                          isExpanded: true,
-                          items: _encoderItems.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 14)),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() => _selectedEncoder = value ?? 'H264');
+                      child: SooperLabel(
+                        label: "Encoder",
+                        child: SooperDropdown(
+                          dropdownValue: _selectedEncoder, 
+                          dropdownValueList: _encoderItems,
+                          onStateChanged: (encoderValue) {
+                            setState(() {
+                              _selectedEncoder = encoderValue ?? 'H264';
+                            });
                           },
                         ),
-                      ),
+                      )
                     ),
                   ],
                 ),
@@ -275,54 +255,32 @@ class SooperViewMainState extends State<SooperViewScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300, width: 1.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: DropdownButton<String>(
-                          value: _selectedResolution,
-                          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                          hint: const Text("Resolution", style: TextStyle(fontStyle: FontStyle.italic)),
-                          isExpanded: true,
-                          items: _resolutionItems.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 14)),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() => _selectedResolution = value ?? '4K');
+                      child: SooperLabel(
+                        label: "Resolution",
+                        child: SooperDropdown(
+                          dropdownValue: _selectedResolution, 
+                          dropdownValueList: _resolutionItems,
+                          onStateChanged: (resolutionValue) {
+                            setState(() {
+                              _selectedResolution = resolutionValue ?? '4K';
+                            });
                           },
                         ),
-                      ),
+                      )
                     ),
                     Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300, width: 1.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: DropdownButton<int>(
-                          value: FfmpegArgumentBuilder.GetCRFValue(_selectedHardware),
-                          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                          hint: const Text("CRF", style: TextStyle(fontStyle: FontStyle.italic)),
-                          isExpanded: true,
-                          items: FfmpegArgumentBuilder.GetCRFValueList(_selectedHardware).map((int value) {
-                            return DropdownMenuItem<int>(
-                              value: value,
-                              child: Text(value.toString(), style: const TextStyle(fontSize: 12)),
-                            );
-                          }).toList(),
-                          onChanged: (int? value) {
-                            setState(() => FfmpegArgumentBuilder.SetCRFValue(_selectedHardware, value!));
+                      child: SooperLabel(
+                        label: "CRF",
+                        child: SooperDropdown<int>(
+                          dropdownValue: FfmpegArgumentBuilder.GetCRFValue(_selectedHardware), 
+                          dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(_selectedHardware),
+                          onStateChanged: (int? crfValue) {
+                            setState(() {
+                              FfmpegArgumentBuilder.SetCRFValue(_selectedHardware, crfValue!);
+                            });
                           },
                         ),
-                      ),
+                      )
                     ),
                   ],
                 ),
@@ -332,71 +290,51 @@ class SooperViewMainState extends State<SooperViewScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300, width: 1.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: DropdownButton<String>(
-                          value: _selectedColorspace,
-                          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                          hint: const Text("ColorSpace", style: TextStyle(fontStyle: FontStyle.italic)),
-                          isExpanded: true,
-                          items: _colorspaceItems.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 14)),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() => _selectedColorspace = value ?? '8-bit');
+                      child: SooperLabel(
+                        label: "Colorspace",
+                        child: SooperDropdown(
+                          dropdownValue: _selectedColorspace, 
+                          dropdownValueList: _colorspaceItems,
+                          onStateChanged: (colorspaceValue) {
+                            setState(() {
+                              _selectedColorspace = colorspaceValue ?? '8-bit';
+                            });
                           },
                         ),
-                      ),
+                      )
                     ),
 
                     // PRESET VALUES
                     if (_selectedHardware == "CPU" || _selectedHardware == "NVIDIA" || _selectedHardware == "AMD" || _selectedHardware == "INTEL" /*|| _selectedHardware == "Android"*/)
                       Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300, width: 1.5),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: DropdownButton<String>(
-                            value: FfmpegArgumentBuilder.GetCurrentPresetValue(_selectedHardware, _selectedEncoder),
-                            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                            hint: const Text("Preset", style: TextStyle(fontStyle: FontStyle.italic)),
-                            isExpanded: true,
-                            items: FfmpegArgumentBuilder.presetValues[(_selectedHardware, _selectedEncoder)]!.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value, style: const TextStyle(fontSize: 14)),
-                              );
-                            }).toList(),
-                            onChanged: (String? value) {
-                              setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(_selectedHardware, _selectedEncoder, value!));
+                        child: SooperLabel(
+                          label: "Preset",
+                          child: SooperDropdown(
+                            dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(_selectedHardware, _selectedEncoder), 
+                            dropdownValueList: FfmpegArgumentBuilder.presetValues[(_selectedHardware, _selectedEncoder)]!,
+                            onStateChanged: (presetValue) {
+                              setState(() {
+                                setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(_selectedHardware, _selectedEncoder, presetValue!));
+                              });
                             },
                           ),
-                        ),
+                        )
                       ),
                     ],
                 ),
 
                 // End of Dropdowns
 
-                if (_selectedFile != null)
+                if (_selectedFile != null)  // Displays Current Selected File
                   Text(_status),
+
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
                   onPressed: _isEncoding ? null : pickFile,
                   icon: const Icon(Icons.add),
                   label: const Text('Choose Video'),
                 ),
+
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: _isEncoding ? null : encode,
@@ -422,11 +360,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     label: const Text('Cancel'),
                   ),
                 ],
-                //const SizedBox(height: 30),
-                //ElevatedButton.icon(
-                //  onPressed: probe, 
-                //  icon: const Icon(Icons.insights),
-                //  label: const Text("Probe"))
               ],
             ),
           ),

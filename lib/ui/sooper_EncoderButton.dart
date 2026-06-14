@@ -10,6 +10,8 @@ import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/remap_file_generator.dart';
 import 'package:sooperview/FFmpegManager.dart';
 
+import 'package:sooperview/PermissionHandler.dart';
+
 class SooperEncoderButton extends StatelessWidget {
   
   final VoidCallback? onPressed;
@@ -33,6 +35,9 @@ class SooperEncoderButton extends StatelessWidget {
   });
 
   Future<void> encode() async {
+    bool permissionsGood = await PermissionHandler.HasNeededPermissions();
+    if (!permissionsGood) return;
+
     FFmpegManager.isEncoding = true;
     onPressed?.call();
     await FFprobeKit.getMediaInformationAsync("'${FileManager.GetCurrentFile()?.path}'", onComplete: (session) async {

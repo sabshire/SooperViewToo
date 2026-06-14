@@ -17,11 +17,9 @@ import 'package:sooperview/ui/sooper_EncoderButton.dart';
 import 'package:sooperview/ui/sooper_dropdown.dart';
 import 'package:sooperview/ui/sooper_labelwidget.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FFmpegKitExtended.initialize();
-  
   
   runApp(const MainApp());
 }

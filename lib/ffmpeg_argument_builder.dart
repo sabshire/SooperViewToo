@@ -1,4 +1,4 @@
-import 'dart:io' show Platform, Directory;
+import 'dart:io' show Directory, File, Platform;
 
 import 'package:sooperview/main.dart';
 import 'package:path_provider/path_provider.dart';
@@ -6,6 +6,18 @@ import 'package:path/path.dart' as p;
 
 /// Builder class for constructing ffmpeg/ffprobe command-line arguments.
 class FfmpegArgumentBuilder {
+  
+  //static File? selectedFile;
+  static String outputPath = "";
+
+  static String selectedEncoder = "H264";
+  static final List<String> encoderItems = ["H264", "HEVC", "AV1"];
+
+  static String selectedHardware = "CPU";
+
+  static String selectedResolution = "4K";
+  static final List<String> resolutionItems = ["4K", "1440p", "1080p", "720p"];
+
   static const Map<(String hw, String encoder), String> encoderSettings = {
     // H264
     ('CPU', 'H264'): '-c:v libx264',
@@ -61,6 +73,10 @@ class FfmpegArgumentBuilder {
     
   };
 
+  static List<String>? GetCurrentPresetList() {
+    return presetValues[(selectedHardware, selectedEncoder)];
+  }
+
   static String nvidiaPresetValue = "p4";
   static String amdPresetValue = "balance";
   static String intelPresetValue = "medium";
@@ -68,8 +84,8 @@ class FfmpegArgumentBuilder {
   static String cpuAV1Value = "6";
   static String selectedAndroidBitrateMode = "cq";
 
-  static String GetCurrentPresetValue(String hw, String encoderType) {
-    switch (hw) {
+  static String GetCurrentPresetValue() {
+    switch (selectedHardware) {
       case "NVIDIA":
         return nvidiaPresetValue;
 
@@ -83,8 +99,8 @@ class FfmpegArgumentBuilder {
         return selectedAndroidBitrateMode;
     }
 
-    if (hw == "CPU") { // SHOULD BE CPU
-      if (encoderType == "AV1") {
+    if (selectedHardware == "CPU") { // SHOULD BE CPU
+      if (selectedEncoder == "AV1") {
         return cpuAV1Value; // AV1
       } else {
         return cpuH26XValue; // H264/HEVC
@@ -94,8 +110,8 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static void SetCurrentPresetValue(String hw, String encoderType, String value) {
-    switch (hw) {
+  static void SetCurrentPresetValue(String value) {
+    switch (selectedHardware) {
       case "NVIDIA":
         nvidiaPresetValue = value;
         return;
@@ -113,8 +129,8 @@ class FfmpegArgumentBuilder {
         return;
     }
 
-    if (hw == "CPU") { // SHOULD BE CPU
-      if (encoderType == "AV1") {
+    if (selectedHardware == "CPU") { // SHOULD BE CPU
+      if (selectedEncoder == "AV1") {
         cpuAV1Value = value; // AV1
         return;
       } else {
@@ -124,8 +140,8 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static String GetPresetArgument(String hw, String encoderType) {
-    switch (hw) {
+  static String GetPresetArgument() {
+    switch (selectedHardware) {
       case "NVIDIA":
         return "-preset $nvidiaPresetValue";
 
@@ -139,8 +155,8 @@ class FfmpegArgumentBuilder {
         //return "-bitrate-mode $selectedAndroidBitrateMode"; // Doesn't seem to work
     }
 
-    if (hw == "CPU") { // SHOULD BE CPU
-      if (encoderType == "AV1") {
+    if (selectedHardware == "CPU") { // SHOULD BE CPU
+      if (selectedEncoder == "AV1") {
         return "-preset $cpuAV1Value";
       } else {
         return "-preset $cpuH26XValue";
@@ -164,8 +180,8 @@ class FfmpegArgumentBuilder {
 
   static int crfValue = 18;
   static int crfAndroidValue = 80;
-  static String GetCRFArgument(String hw) {
-    switch(hw) {
+  static String GetCRFArgument() {
+    switch(selectedHardware) {
       case "NVIDIA":
         return "-rc constqp -cq:v $crfValue -b:v 0"; // Not sure if -b:v is needed
 
@@ -184,23 +200,23 @@ class FfmpegArgumentBuilder {
     }
   }
   
-  static List<int> GetCRFValueList(String hw) {
-    if (hw == "Android") {
+  static List<int> GetCRFValueList() {
+    if (selectedHardware == "Android") {
       return List.generate(101, (index) => index);
     } else {
       return List.generate(52, (index) => index);
     }
   }
 
-  static int GetCRFValue(String hw) {
-    if (hw == "Android") {
+  static int GetCRFValue() {
+    if (selectedHardware == "Android") {
       return crfAndroidValue;
     } else {
       return crfValue;
     }
   }
-  static void SetCRFValue(String hw, int crf) {
-    if (hw == "Android") {
+  static void SetCRFValue(int crf) {
+    if (selectedHardware == "Android") {
       crfAndroidValue = crf;
       return;
     } else {
@@ -208,8 +224,11 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static String GetPixelFormat(String colorSpace) {
-    switch(colorSpace) {
+  static String selectedColorspace = "8-bit";
+  static final List<String> colorspaceItems = ["8-bit", "10-bit"];
+
+  static String GetPixelFormat() {
+    switch(selectedColorspace) {
       case "10-bit":
         return "-pix_fmt yuv420p10le";
 
@@ -256,15 +275,18 @@ class FfmpegArgumentBuilder {
         return "1920"; // Default just in case
     }
   }
+
+  static String videoFormat = "mp4";
+  static List<String> videoFormatList = ["mp4", "mov", "mkv", "webm", "avi"];
   // -v error -hide_banner -print_format json -show_format -show_streams -show_chapters -i 'C:\Users\Stacey Abshire\Videos\djio3\2026\04\18\DJI_0118.MP4'
   static String buildFfprobeArguments(String filePath) =>
       "-i ${wrapPathInQuotes(filePath)} -show_entries stream=width,height,duration -of json";
 
-  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath, String resolution, String hardware, String encoderType, String colorspace) async { // TODO Move some of these variables to this class
+  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async { // TODO Move some of these variables to this class
     final Directory tempDir = await getTemporaryDirectory();
-    final path = p.join(tempDir.path, "sooperview-temp.mp4");
+    final path = p.join(tempDir.path, "sooperview-temp.$videoFormat");
 
-    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(resolution)}:${GetHeight(resolution)} ${encoderSettings[(hardware, encoderType)]} ${GetCRFArgument(hardware)} ${GetPresetArgument(hardware, encoderType)} ${GetPixelFormat(colorspace)} ${path}";
+    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${GetCRFArgument()} ${GetPresetArgument()} ${GetPixelFormat()} ${path}";
   }
 
   static String wrapPathInQuotes(String path) => "'$path'";

@@ -6,10 +6,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:open_file_manager/open_file_manager.dart';
+import 'package:sooperview/FFmpegManager.dart';
+import 'package:sooperview/FileManager.dart';
 
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/remap_file_generator.dart';
+import 'package:sooperview/ui/sooper_EncoderButton.dart';
 // UI imports
 import 'package:sooperview/ui/sooper_dropdown.dart';
 import 'package:sooperview/ui/sooper_labelwidget.dart';
@@ -43,12 +46,12 @@ class SooperViewScreen extends StatefulWidget {
 }
 
 class SooperViewMainState extends State<SooperViewScreen> {
-  File? _selectedFile;
-  bool _isEncoding = false;
+  //File? _selectedFile;
+  //bool _isEncoding = false;
   String _status = 'Select a video file';
   String? _outputPath;
-  int _totalFrames = 0;
-  FFmpegSession? ffmpeg;
+  //int _totalFrames = 0;
+  //FFmpegSession? ffmpeg;
 
   double _progressPercentage = -1;
 
@@ -58,7 +61,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
       final filePath = result.files.single.path;
       if (filePath != null) {
         setState(() {
-          _selectedFile = File(filePath);
+          FileManager.AddFile([File(filePath)]);
           _status = 'Selected: ${result.files.single.name}';
         });
       }
@@ -89,72 +92,75 @@ class SooperViewMainState extends State<SooperViewScreen> {
     }
   }
 
-  Future<void> encode() async {
-    setState(() => _isEncoding = true);
+  // Future<void> encode() async {
+  //   setState(() => _isEncoding = true);
 
-    //await pickOutputDir();
-    var cmd = FfmpegArgumentBuilder.buildFfprobeArguments(_selectedFile!.path);
-    await FFprobeKit.getMediaInformationAsync("'${_selectedFile!.path}'", onComplete: (session) async {
-    //await FFprobeKit.executeAsync(cmd, onComplete: (session) async {
-      print(session.command);
-      final result = session.getLogsAsString();
-      print(result);
+  //   //await pickOutputDir();
+  //   var cmd = FfmpegArgumentBuilder.buildFfprobeArguments(_selectedFile!.path);
+  //   await FFprobeKit.getMediaInformationAsync("'${_selectedFile!.path}'", onComplete: (session) async {
+  //   //await FFprobeKit.executeAsync(cmd, onComplete: (session) async {
+  //     print(session.command);
+  //     final result = session.getLogsAsString();
+  //     print(result);
 
-      final jsonRegex = RegExp(r'\{[\s\S]*\}');
-      final match = jsonRegex.stringMatch(result!);
-      if (match == null) {
-        throw const FormatException("No valid JSON block found in output string.");
-      }
-      final metadata = VideoProperties.fromFfprobeJson(match);
-      _totalFrames = metadata.totalFrames;
-      print("${metadata.width}x${metadata.height} | ${metadata.duration}");
-      var mapLoc = await RemapFileGenerator().generateCrossPlatformRemapFiles(metadata);
-      print(mapLoc["xmap"]);
-      print(mapLoc["ymap"]);
-      final command = await FfmpegArgumentBuilder.BuildFFmpegArguments(_selectedFile!.path, mapLoc["xmap"]!, mapLoc["ymap"]!, _selectedResolution, _selectedHardware, _selectedEncoder, _selectedColorspace);
-      print(command);
+  //     final jsonRegex = RegExp(r'\{[\s\S]*\}');
+  //     final match = jsonRegex.stringMatch(result!);
+  //     if (match == null) {
+  //       throw const FormatException("No valid JSON block found in output string.");
+  //     }
+  //     final metadata = VideoProperties.fromFfprobeJson(match);
+  //     _totalFrames = metadata.totalFrames;
+  //     print("${metadata.width}x${metadata.height} | ${metadata.duration}");
+  //     var mapLoc = await RemapFileGenerator().generateCrossPlatformRemapFiles(metadata);
+  //     print(mapLoc["xmap"]);
+  //     print(mapLoc["ymap"]);
+  //     final command = await FfmpegArgumentBuilder.BuildFFmpegArguments(FileManager.GetCurrentFile()!.path, mapLoc["xmap"]!, mapLoc["ymap"]!, _selectedResolution, _selectedHardware, _selectedEncoder);
+  //     print(command);
 
-      ffmpeg = FFmpegKit.createSession(command);
-      // set media duration for progress calculation
-      final duration = metadata.duration * 1000;
-      ffmpeg!.setExpectedTranscodingDuration(
-        Duration(milliseconds: duration.toInt()),
-      );
+  //     ffmpeg = FFmpegKit.createSession(command);
+  //     // set media duration for progress calculation
+  //     final duration = metadata.duration * 1000;
+  //     ffmpeg!.setExpectedTranscodingDuration(
+  //       Duration(milliseconds: duration.toInt()),
+  //     );
 
-      await ffmpeg!.executeAsync(completeCallback: (session) async {
-        final returnCode = session.getReturnCode();
-        final logs = session.getLogsAsString();
+  //     await ffmpeg!.executeAsync(completeCallback: (session) async {
+  //       final returnCode = session.getReturnCode();
+  //       final logs = session.getLogsAsString();
         
-        if (ReturnCode.isSuccess(returnCode)) {
-          print("Finish logs: $logs");
-          print("Command success");
+  //       if (ReturnCode.isSuccess(returnCode)) {
+  //         print("Finish logs: $logs");
+  //         print("Command success");
 
-          // Move to new folder
-          final Directory tempDir = await getTemporaryDirectory();
-          final path = p.join(tempDir.path, "sooperview-temp.mp4");
-          moveExistingFile(File(path));
-        } else if (ReturnCode.isCancel(returnCode)) {
-          print("Command cancelled");
-        } else {
-          print("Command failed with state ${session.getState()}");
-          print("Stack trace: $logs");
-        }
-        setState(() {
-          _isEncoding = false;
-          _progressPercentage = -1;
-          ffmpeg = null;
-        });
-      }, statisticsCallback: (statistics) async {
-        print(statistics.transcodingProgressPercent);
-        setState(() {
-          _progressPercentage = ((statistics.videoFrameNumber / _totalFrames) * 100);
-        });
-      },);
-    });
-  }
+  //         // Move to new folder
+  //         final Directory tempDir = await getTemporaryDirectory();
+  //         final path = p.join(tempDir.path, "sooperview-temp.mp4");
+  //         moveExistingFile(File(path));
+  //       } else if (ReturnCode.isCancel(returnCode)) {
+  //         print("Command cancelled");
+  //       } else {
+  //         print("Command failed with state ${session.getState()}");
+  //         print("Stack trace: $logs");
+  //       }
+  //       setState(() {
+  //         _isEncoding = false;
+  //         _progressPercentage = -1;
+  //         ffmpeg = null;
+  //       });
+  //     }, statisticsCallback: (statistics) async {
+  //       print(statistics.transcodingProgressPercent);
+  //       setState(() {
+  //         _progressPercentage = ((statistics.videoFrameNumber / _totalFrames) * 100);
+  //       });
+  //     },);
+  //   });
+  // }
 
-  Future<void> moveExistingFile(File sourceFile) async {
-    // 1. Verify the source file actually exists
+  Future<void> moveExistingTempFile(String sourceFileStr) async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final path = p.join(tempDir.path, "sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
+    File sourceFile = File(path);
+
     if (!await sourceFile.exists()) {
       print("Source file does not exist!");
       return;
@@ -169,7 +175,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
         _outputPath = targetDirectory;
       });
       //String fileName = p.basename(sourceFile.path);
-      String fileName = "SV-${p.basename(_selectedFile!.path)}";
+      String fileName = "SV-${p.basename(FileManager.GetCurrentFile()!.path)}";
 
       // 4. Construct the complete destination path
       String newPath = '$targetDirectory/$fileName';
@@ -190,18 +196,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
       print('User canceled the folder selection.');
     }
   }
-
-  String _selectedEncoder = "H264";
-  final List<String> _encoderItems = ["H264", "HEVC", "AV1"];
-
-  String _selectedHardware = "CPU";
-  //final List<String> _hardwareItems = ["CPU", "NVIDIA", "AMD", "INTEL", "Android"];
-
-  String _selectedResolution = "4K";
-  final List<String> _resolutionItems = ["4K", "1440p", "1080p", "720p"];
-
-  String _selectedColorspace = "8-bit";
-  final List<String> _colorspaceItems = ["8-bit", "10-bit"];
 
   @override
   Widget build(BuildContext context) {
@@ -226,11 +220,11 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       child: SooperLabel(
                         label: "Hardware",
                         child: SooperDropdown(
-                          dropdownValue: _selectedHardware, 
+                          dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
                           dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
                           onStateChanged: (hardwareValue) {
                             setState(() {
-                              _selectedHardware = hardwareValue ?? 'CPU';
+                              FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
                             });
                           },
                         ),
@@ -240,11 +234,11 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       child: SooperLabel(
                         label: "Encoder",
                         child: SooperDropdown(
-                          dropdownValue: _selectedEncoder, 
-                          dropdownValueList: _encoderItems,
+                          dropdownValue: FfmpegArgumentBuilder.selectedEncoder, 
+                          dropdownValueList: FfmpegArgumentBuilder.encoderItems,
                           onStateChanged: (encoderValue) {
                             setState(() {
-                              _selectedEncoder = encoderValue ?? 'H264';
+                              FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.encoderItems[0];
                             });
                           },
                         ),
@@ -262,11 +256,11 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       child: SooperLabel(
                         label: "Resolution",
                         child: SooperDropdown(
-                          dropdownValue: _selectedResolution, 
-                          dropdownValueList: _resolutionItems,
+                          dropdownValue: FfmpegArgumentBuilder.selectedResolution, 
+                          dropdownValueList: FfmpegArgumentBuilder.resolutionItems,
                           onStateChanged: (resolutionValue) {
                             setState(() {
-                              _selectedResolution = resolutionValue ?? '4K';
+                              FfmpegArgumentBuilder.selectedResolution = resolutionValue ?? FfmpegArgumentBuilder.resolutionItems[0];
                             });
                           },
                         ),
@@ -276,11 +270,11 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       child: SooperLabel(
                         label: "CRF",
                         child: SooperDropdown<int>(
-                          dropdownValue: FfmpegArgumentBuilder.GetCRFValue(_selectedHardware), 
-                          dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(_selectedHardware),
+                          dropdownValue: FfmpegArgumentBuilder.GetCRFValue(), 
+                          dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(),
                           onStateChanged: (int? crfValue) {
                             setState(() {
-                              FfmpegArgumentBuilder.SetCRFValue(_selectedHardware, crfValue!);
+                              FfmpegArgumentBuilder.SetCRFValue(crfValue!);
                             });
                           },
                         ),
@@ -297,11 +291,11 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       child: SooperLabel(
                         label: "Colorspace",
                         child: SooperDropdown(
-                          dropdownValue: _selectedColorspace, 
-                          dropdownValueList: _colorspaceItems,
+                          dropdownValue: FfmpegArgumentBuilder.selectedColorspace, 
+                          dropdownValueList: FfmpegArgumentBuilder.colorspaceItems,
                           onStateChanged: (colorspaceValue) {
                             setState(() {
-                              _selectedColorspace = colorspaceValue ?? '8-bit';
+                              FfmpegArgumentBuilder.selectedColorspace = colorspaceValue ?? '8-bit';
                             });
                           },
                         ),
@@ -309,16 +303,16 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     ),
 
                     // PRESET VALUES
-                    if (_selectedHardware == "CPU" || _selectedHardware == "NVIDIA" || _selectedHardware == "AMD" || _selectedHardware == "INTEL" /*|| _selectedHardware == "Android"*/)
+                    if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
                       Expanded(
                         child: SooperLabel(
                           label: "Preset",
                           child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(_selectedHardware, _selectedEncoder), 
-                            dropdownValueList: FfmpegArgumentBuilder.presetValues[(_selectedHardware, _selectedEncoder)]!,
+                            dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(), 
+                            dropdownValueList: FfmpegArgumentBuilder.GetCurrentPresetList()!,
                             onStateChanged: (presetValue) {
                               setState(() {
-                                setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(_selectedHardware, _selectedEncoder, presetValue!));
+                                setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(presetValue!));
                               });
                             },
                           ),
@@ -329,21 +323,26 @@ class SooperViewMainState extends State<SooperViewScreen> {
 
                 // End of Dropdowns
 
-                if (_selectedFile != null)  // Displays Current Selected File
+                if (FileManager.GetCurrentFile() != null)  // Displays Current Selected File
                   Text(_status),
 
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
-                  onPressed: _isEncoding ? null : pickFile,
+                  onPressed: FFmpegManager.isEncoding ? null : pickFile,
                   icon: const Icon(Icons.add),
                   label: const Text('Choose Video'),
                 ),
 
                 const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: _isEncoding ? null : encode,
-                  icon: const Icon(Icons.play_arrow, color: Colors.green,),
-                  label: const Text('Encode'),
+                SooperEncoderButton(
+                  onProgressUpdate: (progressPercentage) => setState(() {
+                    // This should call update for Progress Percentage?
+                  }),
+                  onComplete: () {
+                    setState(() {
+                      moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
+                    });
+                  },
                 ),
                 if (_outputPath != null) ...[
                   const SizedBox(height: 20),
@@ -352,14 +351,14 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     child: const Text('Open Output'),
                   ),
                 ],
-                if (_progressPercentage > -1) ...[
+                if (FFmpegManager.ffmpegProgressPercentage > -1) ...[
                   const SizedBox(height: 20),
-                  Text("Progress: ${_progressPercentage.toStringAsFixed(2)}%"),
+                  Text("Progress: ${FFmpegManager.ffmpegProgressPercentage.toStringAsFixed(2)}%"),
                 ],
-                if (ffmpeg != null) ...[
+                if (FFmpegManager.ffmpegSession != null) ...[ // TODO: This needs to be better and work in all stages of encoding / ffprobe. Currently only works during encoding!
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
-                    onPressed: ffmpeg!.cancel,
+                    onPressed: FFmpegManager.ffmpegSession!.cancel,
                     icon: const Icon(Icons.close, color: Colors.red),
                     label: const Text('Cancel'),
                   ),

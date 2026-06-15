@@ -8,7 +8,6 @@ android {
     namespace = "com.example.sooperview"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-    compileSdkVersion 35
     
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -36,6 +36,7 @@ class SooperEncoderButton extends StatelessWidget {
   Future<void> encode() async {
     bool permissionsGood = await PermissionHandler.HasNeededPermissions();
     if (!permissionsGood) return;
+    FileManager.GetOutputDir();
 
     FFmpegManager.isEncoding = true;
     onPressed?.call();
@@ -81,7 +82,7 @@ class SooperEncoderButton extends StatelessWidget {
 
         FFmpegManager.isEncoding = false;
         onFinished?.call();
-        
+
       }, statisticsCallback: (statistics) async {
         print(statistics.transcodingProgressPercent);
         FFmpegManager.ffmpegProgressPercentage = ((statistics.videoFrameNumber / FFmpegManager.ffmpegTotalFrameNum) * 100);

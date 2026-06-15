@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:open_file_manager/open_file_manager.dart';
 import 'package:sooperview/FFmpegManager.dart';
 import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/PermissionHandler.dart';
 
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
@@ -20,7 +21,7 @@ import 'package:sooperview/ui/sooper_labelwidget.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FFmpegKitExtended.initialize();
-  
+  //FileManager.SetOutputDir();
   runApp(const MainApp());
 }
 
@@ -47,7 +48,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
   //File? _selectedFile;
   //bool _isEncoding = false;
   String _status = 'Select a video file';
-  String? _outputPath;
+  //String? _outputPath;
   //int _totalFrames = 0;
   //FFmpegSession? ffmpeg;
 
@@ -72,128 +73,69 @@ class SooperViewMainState extends State<SooperViewScreen> {
       await openFileManager(
         androidConfig: AndroidConfig(
           folderType: AndroidFolderType.other,
-          folderPath: _outputPath!,
+          folderPath: await FileManager.GetOutputDir(),
         ),
       );
     } 
     else if (Platform.isWindows) {
       // Windows: Trigger explorer.exe
-      await Process.run('explorer.exe', [_outputPath!]);
+      await Process.run('explorer.exe', [await FileManager.GetOutputDir()]);
     } 
     else if (Platform.isMacOS) {
       // macOS: Trigger the 'open' command to launch Finder
-      await Process.run('open', [_outputPath!]);
+      await Process.run('open', [await FileManager.GetOutputDir()]);
     } 
     else if (Platform.isLinux) {
       // Linux: Trigger xdg-open to load the desktop-assigned file manager
-      await Process.run('xdg-open', [_outputPath!]);
+      await Process.run('xdg-open', [await FileManager.GetOutputDir()]);
     }
   }
 
-  // Future<void> encode() async {
-  //   setState(() => _isEncoding = true);
+  // Future<void> moveExistingTempFile(String sourceFileStr) async {
+  //   final Directory tempDir = await getTemporaryDirectory();
+  //   final path = p.join(tempDir.path, "sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
+  //   File sourceFile = File(path);
 
-  //   //await pickOutputDir();
-  //   var cmd = FfmpegArgumentBuilder.buildFfprobeArguments(_selectedFile!.path);
-  //   await FFprobeKit.getMediaInformationAsync("'${_selectedFile!.path}'", onComplete: (session) async {
-  //   //await FFprobeKit.executeAsync(cmd, onComplete: (session) async {
-  //     print(session.command);
-  //     final result = session.getLogsAsString();
-  //     print(result);
+  //   if (!await sourceFile.exists()) {
+  //     print("Source file does not exist!");
+  //     return;
+  //   }
 
-  //     final jsonRegex = RegExp(r'\{[\s\S]*\}');
-  //     final match = jsonRegex.stringMatch(result!);
-  //     if (match == null) {
-  //       throw const FormatException("No valid JSON block found in output string.");
+  //   // 2. Let the user choose the target directory
+  //   String? targetDirectory = "";
+  //   if (await PermissionHandler.HasNeededPermissions()) {
+  //     targetDirectory = p.dirname(FileManager.GetCurrentFile()!.path);
+  //   } else {
+  //     targetDirectory = await FilePicker.platform.getDirectoryPath();
+  //   }
+    
+  //   if (targetDirectory != null) {
+  //     // 3. Extract the original filename (e.g., 'document.pdf')
+  //     setState(() {
+  //       _outputPath = targetDirectory;
+  //     });
+  //     //String fileName = p.basename(sourceFile.path);
+  //     String fileName = "SV-${p.basename(FileManager.GetCurrentFile()!.path)}";
+
+  //     // 4. Construct the complete destination path
+  //     String newPath = '$targetDirectory/$fileName';
+
+  //     try {
+  //       // 5. Move the file
+  //       // Note: rename() works instantly if on the same storage partition.
+  //       await sourceFile.rename(newPath);
+  //       print('File successfully moved to: $newPath');
+  //     } catch (e) {
+  //       // Fallback: If moving across different partitions (e.g., internal to SD card),
+  //       // rename() might fail. Use copy and delete instead.
+  //       final newFile = await sourceFile.copy(newPath);
+  //       await sourceFile.delete();
+  //       print('File copied and original deleted at: ${newFile.path}');
   //     }
-  //     final metadata = VideoProperties.fromFfprobeJson(match);
-  //     _totalFrames = metadata.totalFrames;
-  //     print("${metadata.width}x${metadata.height} | ${metadata.duration}");
-  //     var mapLoc = await RemapFileGenerator().generateCrossPlatformRemapFiles(metadata);
-  //     print(mapLoc["xmap"]);
-  //     print(mapLoc["ymap"]);
-  //     final command = await FfmpegArgumentBuilder.BuildFFmpegArguments(FileManager.GetCurrentFile()!.path, mapLoc["xmap"]!, mapLoc["ymap"]!, _selectedResolution, _selectedHardware, _selectedEncoder);
-  //     print(command);
-
-  //     ffmpeg = FFmpegKit.createSession(command);
-  //     // set media duration for progress calculation
-  //     final duration = metadata.duration * 1000;
-  //     ffmpeg!.setExpectedTranscodingDuration(
-  //       Duration(milliseconds: duration.toInt()),
-  //     );
-
-  //     await ffmpeg!.executeAsync(completeCallback: (session) async {
-  //       final returnCode = session.getReturnCode();
-  //       final logs = session.getLogsAsString();
-        
-  //       if (ReturnCode.isSuccess(returnCode)) {
-  //         print("Finish logs: $logs");
-  //         print("Command success");
-
-  //         // Move to new folder
-  //         final Directory tempDir = await getTemporaryDirectory();
-  //         final path = p.join(tempDir.path, "sooperview-temp.mp4");
-  //         moveExistingFile(File(path));
-  //       } else if (ReturnCode.isCancel(returnCode)) {
-  //         print("Command cancelled");
-  //       } else {
-  //         print("Command failed with state ${session.getState()}");
-  //         print("Stack trace: $logs");
-  //       }
-  //       setState(() {
-  //         _isEncoding = false;
-  //         _progressPercentage = -1;
-  //         ffmpeg = null;
-  //       });
-  //     }, statisticsCallback: (statistics) async {
-  //       print(statistics.transcodingProgressPercent);
-  //       setState(() {
-  //         _progressPercentage = ((statistics.videoFrameNumber / _totalFrames) * 100);
-  //       });
-  //     },);
-  //   });
+  //   } else {
+  //     print('User canceled the folder selection.');
+  //   }
   // }
-
-  Future<void> moveExistingTempFile(String sourceFileStr) async {
-    final Directory tempDir = await getTemporaryDirectory();
-    final path = p.join(tempDir.path, "sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
-    File sourceFile = File(path);
-
-    if (!await sourceFile.exists()) {
-      print("Source file does not exist!");
-      return;
-    }
-
-    // 2. Let the user choose the target directory
-    String? targetDirectory = await FilePicker.platform.getDirectoryPath();
-
-    if (targetDirectory != null) {
-      // 3. Extract the original filename (e.g., 'document.pdf')
-      setState(() {
-        _outputPath = targetDirectory;
-      });
-      //String fileName = p.basename(sourceFile.path);
-      String fileName = "SV-${p.basename(FileManager.GetCurrentFile()!.path)}";
-
-      // 4. Construct the complete destination path
-      String newPath = '$targetDirectory/$fileName';
-
-      try {
-        // 5. Move the file
-        // Note: rename() works instantly if on the same storage partition.
-        await sourceFile.rename(newPath);
-        print('File successfully moved to: $newPath');
-      } catch (e) {
-        // Fallback: If moving across different partitions (e.g., internal to SD card),
-        // rename() might fail. Use copy and delete instead.
-        final newFile = await sourceFile.copy(newPath);
-        await sourceFile.delete();
-        print('File copied and original deleted at: ${newFile.path}');
-      }
-    } else {
-      print('User canceled the folder selection.');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -338,17 +280,15 @@ class SooperViewMainState extends State<SooperViewScreen> {
                   }),
                   onComplete: () {
                     setState(() {
-                      moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
+                      FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
                     });
                   },
                 ),
-                if (_outputPath != null) ...[
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: _openOutputFolder,
-                    child: const Text('Open Output'),
-                  ),
-                ],
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: _openOutputFolder,
+                  child: const Text('Open Output'),
+                ),
                 if (FFmpegManager.ffmpegProgressPercentage > -1) ...[
                   const SizedBox(height: 20),
                   Text("Progress: ${FFmpegManager.ffmpegProgressPercentage.toStringAsFixed(2)}%"),

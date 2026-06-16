@@ -13,6 +13,7 @@ import 'package:sooperview/PermissionHandler.dart';
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/remap_file_generator.dart';
+import 'package:sooperview/ui/FileListWidget.dart';
 import 'package:sooperview/ui/sooper_EncoderButton.dart';
 // UI imports
 import 'package:sooperview/ui/sooper_dropdown.dart';
@@ -55,15 +56,19 @@ class SooperViewMainState extends State<SooperViewScreen> {
   double _progressPercentage = -1;
 
   Future<void> pickFile() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.video);
+    final result = await FilePicker.platform.pickFiles(type: FileType.video, allowMultiple: true);
     if (result != null && result.files.isNotEmpty) {
-      final filePath = result.files.single.path;
-      if (filePath != null) {
-        setState(() {
-          FileManager.AddFile([File(filePath)]);
-          _status = 'Selected: ${result.files.single.name}';
-        });
+      //final filePath = result.files.single.path;
+      List<File> files = [];
+      for (int fileNum = 0; fileNum < result.files.length; fileNum++) {
+        if (result.files[fileNum].path == null) continue;
+        files.add(File(result.files[fileNum].path!));
       }
+      
+      setState(() {
+        FileManager.AddFile(files);
+        _status = 'Selected First File: ${result.files[0].name}';
+      });
     }
   }
   
@@ -90,52 +95,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
       await Process.run('xdg-open', [await FileManager.GetOutputDir()]);
     }
   }
-
-  // Future<void> moveExistingTempFile(String sourceFileStr) async {
-  //   final Directory tempDir = await getTemporaryDirectory();
-  //   final path = p.join(tempDir.path, "sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
-  //   File sourceFile = File(path);
-
-  //   if (!await sourceFile.exists()) {
-  //     print("Source file does not exist!");
-  //     return;
-  //   }
-
-  //   // 2. Let the user choose the target directory
-  //   String? targetDirectory = "";
-  //   if (await PermissionHandler.HasNeededPermissions()) {
-  //     targetDirectory = p.dirname(FileManager.GetCurrentFile()!.path);
-  //   } else {
-  //     targetDirectory = await FilePicker.platform.getDirectoryPath();
-  //   }
-    
-  //   if (targetDirectory != null) {
-  //     // 3. Extract the original filename (e.g., 'document.pdf')
-  //     setState(() {
-  //       _outputPath = targetDirectory;
-  //     });
-  //     //String fileName = p.basename(sourceFile.path);
-  //     String fileName = "SV-${p.basename(FileManager.GetCurrentFile()!.path)}";
-
-  //     // 4. Construct the complete destination path
-  //     String newPath = '$targetDirectory/$fileName';
-
-  //     try {
-  //       // 5. Move the file
-  //       // Note: rename() works instantly if on the same storage partition.
-  //       await sourceFile.rename(newPath);
-  //       print('File successfully moved to: $newPath');
-  //     } catch (e) {
-  //       // Fallback: If moving across different partitions (e.g., internal to SD card),
-  //       // rename() might fail. Use copy and delete instead.
-  //       final newFile = await sourceFile.copy(newPath);
-  //       await sourceFile.delete();
-  //       print('File copied and original deleted at: ${newFile.path}');
-  //     }
-  //   } else {
-  //     print('User canceled the folder selection.');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -263,8 +222,8 @@ class SooperViewMainState extends State<SooperViewScreen> {
 
                 // End of Dropdowns
 
-                if (FileManager.GetCurrentFile() != null)  // Displays Current Selected File
-                  Text(_status),
+                //if (FileManager.GetCurrentFile() != null)  // Displays Current Selected File
+                //  Text(_status),
 
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
@@ -280,7 +239,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
                   }),
                   onComplete: () {
                     setState(() {
-                      FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}");
+                      FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
                     });
                   },
                 ),
@@ -291,7 +250,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
                 ),
                 if (FFmpegManager.ffmpegProgressPercentage > -1) ...[
                   const SizedBox(height: 20),
-                  Text("Progress: ${FFmpegManager.ffmpegProgressPercentage.toStringAsFixed(2)}%"),
+                  Text("Progress: ${FFmpegManager.ffmpegProgressPercentage.toStringAsFixed(2)}% ${(FileManager.currentFile + 1)}/${FileManager.selectedFileList.length}"),
                 ],
                 if (FFmpegManager.ffmpegSession != null) ...[ // TODO: This needs to be better and work in all stages of encoding / ffprobe. Currently only works during encoding!
                   const SizedBox(height: 20),
@@ -301,6 +260,15 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     label: const Text('Cancel'),
                   ),
                 ],
+                if (FileManager.fileList.isNotEmpty)
+                  FileListWidget(
+                    fileList: FileManager.fileList,
+                    onRemove: (file) => setState(() => FileManager.RemoveFile(file)),
+                    onSelectionUpdate: () => setState(() {
+                      
+                    }),
+                  ),
+
               ],
             ),
           ),

@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FileManager {
 
   static List<File> fileList = [];
+  static List<File> selectedFileList = [];
   static int currentFile = 0;
 
   static String? outputPath;
@@ -19,21 +20,41 @@ class FileManager {
     fileList.addAll(files);
   }
 
-  static File? GetCurrentFile() {
-    if (fileList.isEmpty) { return null; }
-    return fileList[currentFile];
+  static File? GetCurrentSelectedFile() {
+    if (selectedFileList.isEmpty) { return null; }
+    return selectedFileList[currentFile];
   }
 
-  static File? NextFile() {
+  static File? NextSelectedFile() {
     currentFile++;
-    return GetCurrentFile();
+    return GetCurrentSelectedFile();
+  }
+
+  static bool NextSelectedFileExists() {
+    if ((selectedFileList.length - 1) > (currentFile)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static void RemoveCurrentFile() {
     fileList.removeAt(currentFile);
   }
 
-  static Future<void> moveExistingTempFile(String sourceFileStr) async {
+  static void RemoveFile(File file) {
+    fileList.remove(file);
+  }
+
+  static void AddToSelectedFiles(File file) {
+    selectedFileList.add(file);
+  }
+
+  static void RemoveFromSelectedFiles(File file) {
+    selectedFileList.remove(file);
+  }
+
+  static Future<void> moveExistingTempFile(String sourceFileStr, File selectedFile) async {
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, sourceFileStr);
     File sourceFile = File(path);
@@ -43,7 +64,7 @@ class FileManager {
       return;
     }
 
-    String fileName = "SV-${p.basename(FileManager.GetCurrentFile()!.path)}";
+    String fileName = "SV-${p.basename(selectedFile.path)}";
 
     // 4. Construct the complete destination path
     //String newPath = '${}/$fileName';
@@ -67,16 +88,17 @@ class FileManager {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     outputPath = prefs.getString("OUTPUT_DIR");
 
-    if (outputPath == null) { SetOutputDir(); }
+    if (outputPath == null) { outputPath = await SetOutputDir(); }
     return outputPath!;
   }
 
-  static void SetOutputDir() async {
+  static Future<String> SetOutputDir() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     while (outputPath == null) {
       outputPath = await FilePicker.platform.getDirectoryPath(dialogTitle: "Choose your output location");
     }
     prefs.setString("OUTPUT_DIR", outputPath!);
+    return outputPath!;
   }
 
 }

@@ -51,7 +51,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
   //int _totalFrames = 0;
   //FFmpegSession? ffmpeg;
 
-  double _progressPercentage = -1;
 
   Future<void> pickFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.video, allowMultiple: true);
@@ -277,6 +276,9 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       // On Cancelled called and completed
                     });
                   },
+                  onPressed: () => setState(() {
+                    
+                  }),
                 ),
                 const SizedBox(height: 20),
                 TextButton(
@@ -295,7 +297,8 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     label: const Text('Cancel'),
                   ),
                 ],*/
-                if (FileManager.fileList.isNotEmpty)
+                //if (FileManager.fileList.isNotEmpty)
+                if (true)
                   FileListWidget(
                     fileList: FileManager.fileList,
                     onRemove: (file) => setState(() => FileManager.RemoveFile(file)),
@@ -327,17 +330,13 @@ class HomeTabScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('My App'),
-          // 2. Put the TabBar in the bottom slot of the AppBar
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Main'),
-              Tab(text: 'Preview'),
-            ],
-            indicatorColor: Colors.white, // Customizing style (optional)
-            indicatorWeight: 3.0,
-          ),
+        appBar: const TabBar(
+          tabs: [
+            Tab(text: 'Main'),
+            Tab(text: 'Preview'),
+          ],
+          indicatorColor: Colors.white, // Customizing style (optional)
+          indicatorWeight: 3.0,
         ),
         // 3. Place TabBarView in the Scaffold body
         body: const TabBarView(

@@ -47,4 +47,19 @@ class FFmpegManager {
     FileManager.currentFile = 0;
   }
 
+  static String getStatusToText(SooperEncoderStatus status) {
+    switch (status) {
+      case SooperEncoderStatus.encode:
+        return "Encoding";
+      case SooperEncoderStatus.probe:
+        return "Probing";
+      case SooperEncoderStatus.cancelling:
+        return "Cancelling";
+      case SooperEncoderStatus.finish:
+        return "Finished";
+      default:
+        return "Shouldn't see this";
+    }
+  }
+
 }

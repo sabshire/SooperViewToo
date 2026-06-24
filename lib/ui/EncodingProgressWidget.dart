@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sooperview/FileManager.dart';
 
 import '../FFmpegManager.dart';
 
@@ -161,7 +162,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                             width: widget.size / 1.5,  // Increase this value to make it bigger
                             height: widget.size / 1.5, // Keep width and height identical
                             child: CircularProgressIndicator(
-                              value: _animation.value,
+                              value: FFmpegManager.encoderStatus == SooperEncoderStatus.finish ? 1.0 :  _animation.value,
                               strokeWidth: widget.strokeWidth,
                               backgroundColor: Colors.transparent,
                               valueColor: AlwaysStoppedAnimation(
@@ -197,7 +198,18 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                     ),
                                   ),
                                   Text(
-                                    'COMPLETE',
+                                    '${FileManager.currentFile + 1}/${FileManager.selectedFileList.length}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,

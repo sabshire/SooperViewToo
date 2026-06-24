@@ -33,7 +33,7 @@ class SooperEncoderButton extends StatelessWidget {
     bool permissionsGood = await PermissionHandler.HasNeededPermissions();
     if (!permissionsGood) return;
     FileManager.GetOutputDir();
-
+    
     FFmpegManager.encoderStatus = SooperEncoderStatus.probe;
     onPressed?.call();
     FFmpegManager.ffprobeSession = await FFprobeKit.getMediaInformationAsync("'${FileManager.GetCurrentSelectedFile()?.path}'", onComplete: (session) async {
@@ -67,6 +67,7 @@ class SooperEncoderButton extends StatelessWidget {
         final returnCode = session.getReturnCode();
         if (FFmpegManager.encoderStatus == SooperEncoderStatus.cancelling) {
           FFmpegManager.encoderStatus = SooperEncoderStatus.none;
+          FFmpegManager.ffmpegProgressPercentage = 0;
           FFmpegManager.onFinish();
           onCancelled?.call();
           return;
@@ -81,12 +82,13 @@ class SooperEncoderButton extends StatelessWidget {
         if (FileManager.NextSelectedFileExists()) {
           // Another file needs encoding
           FileManager.NextSelectedFile();
+          FFmpegManager.ffmpegProgressPercentage = 0;
           encode();
         } else {
           // Encoding is done
           FFmpegManager.encoderStatus = SooperEncoderStatus.finish;
-          FFmpegManager.onFinish();
           onFinished?.call();
+          FFmpegManager.onFinish();
         }
 
 

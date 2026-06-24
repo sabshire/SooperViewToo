@@ -8,6 +8,7 @@ import 'package:sooperview/FileManager.dart';
 
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
+import 'package:sooperview/ui/EncodingProgressWidget.dart';
 import 'package:sooperview/ui/FileListWidget.dart';
 import 'package:sooperview/ui/sooper_EncoderButton.dart';
 // UI imports
@@ -95,6 +96,33 @@ class SooperViewMainState extends State<SooperViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (FFmpegManager.encoderStatus != SooperEncoderStatus.none) {
+      return EncodingProgressWidget(
+        progress: ((FileManager.currentFile) / FileManager.selectedFileList.length) + (FFmpegManager.ffmpegProgressPercentage / 100 / FileManager.selectedFileList.length),
+        onExitWidget: () {
+          setState(() {
+            FFmpegManager.encoderStatus = SooperEncoderStatus.none;
+          });
+        },
+        onCancelEncode: () {
+          setState(() {
+            switch(FFmpegManager.encoderStatus) {
+              case SooperEncoderStatus.encode:
+              case SooperEncoderStatus.probe:
+              FFmpegManager.encoderStatus = SooperEncoderStatus.cancelling;
+                FFmpegKitExtended.cancelAllSessions();
+              break;
+
+              case SooperEncoderStatus.finish:
+              default:
+                FFmpegManager.encoderStatus = SooperEncoderStatus.none;
+              break;
+            }
+          });
+        },
+        );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('SooperView Dev'),),
       body: ConstrainedBox(
@@ -224,7 +252,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
 
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
-                  onPressed: FFmpegManager.isEncoding ? null : pickFile,
+                  onPressed: (FFmpegManager.encoderStatus == SooperEncoderStatus.none) ? pickFile : null,
                   icon: const Icon(Icons.add),
                   label: const Text('Choose Video'),
                 ),
@@ -239,13 +267,23 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
                     });
                   },
+                  onFinished: () {
+                    setState(() {
+                      // Finished all encoding
+                    });
+                  },
+                  onCancelled: () {
+                    setState(() {
+                      // On Cancelled called and completed
+                    });
+                  },
                 ),
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: _openOutputFolder,
                   child: const Text('Open Output'),
                 ),
-                if (FFmpegManager.ffmpegProgressPercentage > -1) ...[
+                /*if (FFmpegManager.ffmpegProgressPercentage > -1) ...[
                   const SizedBox(height: 20),
                   Text("Progress: ${FFmpegManager.ffmpegProgressPercentage.toStringAsFixed(2)}% ${(FileManager.currentFile + 1)}/${FileManager.selectedFileList.length}"),
                 ],
@@ -256,7 +294,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     icon: const Icon(Icons.close, color: Colors.red),
                     label: const Text('Cancel'),
                   ),
-                ],
+                ],*/
                 if (FileManager.fileList.isNotEmpty)
                   FileListWidget(
                     fileList: FileManager.fileList,

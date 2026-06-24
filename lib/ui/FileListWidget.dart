@@ -19,17 +19,17 @@ class FileListWidget extends StatefulWidget {
 }
 
 class _FileListWidgetState extends State<FileListWidget> {
-  final Set<File> _selectedFiles = <File>{};
+  //final Set<File> _selectedFiles = <File>{};
 
   void _toggleSelection(File file) {
     
     setState(() {
-      if (_selectedFiles.contains(file)) {
-        _selectedFiles.remove(file);
+      if (FileManager.selectedFileList.contains(file)) {
+        //_selectedFiles.remove(file);
         FileManager.RemoveFromSelectedFiles(file);
       } else {
 
-        _selectedFiles.add(file);
+        //_selectedFiles.add(file);
         FileManager.AddToSelectedFiles(file);
       }
     });
@@ -42,8 +42,9 @@ class _FileListWidgetState extends State<FileListWidget> {
       physics: const NeverScrollableScrollPhysics(), // Allows parent to scroll
       itemCount: widget.fileList.length,
       itemBuilder: (context, index) {
-        final file = widget.fileList[index];
-        final isSelected = _selectedFiles.contains(file);
+        //final file = widget.fileList[index];
+        final file = FileManager.fileList[index];
+        final isSelected = FileManager.selectedFileList.contains(file);
 
         return ListTile(
           leading: Checkbox(
@@ -63,9 +64,12 @@ class _FileListWidgetState extends State<FileListWidget> {
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
-              setState(() => _selectedFiles.remove(file));
-              FileManager.RemoveFromSelectedFiles(file);
-              widget.onRemove(file);
+              setState(() {
+                FileManager.RemoveFromSelectedFiles(file);
+                widget.onRemove(file);
+              });
+              //setState(() => _selectedFiles.remove(file));
+              
             },
           ),
           onTap: () => _toggleSelection(file),

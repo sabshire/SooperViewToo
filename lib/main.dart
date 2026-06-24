@@ -1,22 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
-//import 'package:file_selector/file_selector.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:open_file_manager/open_file_manager.dart';
 import 'package:sooperview/FFmpegManager.dart';
 import 'package:sooperview/FileManager.dart';
-import 'package:sooperview/PermissionHandler.dart';
 
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
-import 'package:sooperview/remap_file_generator.dart';
 import 'package:sooperview/ui/FileListWidget.dart';
 import 'package:sooperview/ui/sooper_EncoderButton.dart';
 // UI imports
 import 'package:sooperview/ui/sooper_dropdown.dart';
+import 'package:sooperview/ui/sooper_ffplay_preview_window.dart';
 import 'package:sooperview/ui/sooper_labelwidget.dart';
 
 void main() async {
@@ -33,7 +29,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Video Encoder',
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-      home: const SooperViewScreen(),
+      //home: const SooperViewScreen(),
+      home: const HomeTabScreen(),
     );
   }
 }
@@ -272,6 +269,44 @@ class SooperViewMainState extends State<SooperViewScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+class HomeTabScreen extends StatelessWidget {
+  const HomeTabScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // 1. Wrap the layout with DefaultTabController. Set length to 2.
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('My App'),
+          // 2. Put the TabBar in the bottom slot of the AppBar
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Main'),
+              Tab(text: 'Preview'),
+            ],
+            indicatorColor: Colors.white, // Customizing style (optional)
+            indicatorWeight: 3.0,
+          ),
+        ),
+        // 3. Place TabBarView in the Scaffold body
+        body: const TabBarView(
+          children: [
+            SooperViewScreen(),    // First tab content
+            SooperViewPreviewer(), // Second tab content
+          ],
         ),
       ),
     );

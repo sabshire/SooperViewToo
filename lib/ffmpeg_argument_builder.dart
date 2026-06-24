@@ -1,6 +1,5 @@
 import 'dart:io' show Directory, File, Platform;
 
-import 'package:sooperview/main.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -16,7 +15,7 @@ class FfmpegArgumentBuilder {
   static String selectedHardware = "CPU";
 
   static String selectedResolution = "4K";
-  static final List<String> resolutionItems = ["4K", "1440p", "1080p", "720p"];
+  static final List<String> resolutionItems = ["4K", "1440p", "1080p", "720p", "480p"];
 
   static const Map<(String hw, String encoder), String> encoderSettings = {
     // H264
@@ -252,6 +251,9 @@ class FfmpegArgumentBuilder {
       case "4K":
         return "2160";
 
+      case "480p":
+        return "480";
+
       default:
         return "1080"; // Default just in case
     }
@@ -271,6 +273,9 @@ class FfmpegArgumentBuilder {
       case "4K":
         return "3840";
 
+      case "480p":
+        return "720";
+
       default:
         return "1920"; // Default just in case
     }
@@ -280,9 +285,31 @@ class FfmpegArgumentBuilder {
   static List<String> videoFormatList = ["mp4", "mov", "mkv", "webm", "avi"];
   // -v error -hide_banner -print_format json -show_format -show_streams -show_chapters -i 'C:\Users\Stacey Abshire\Videos\djio3\2026\04\18\DJI_0118.MP4'
   static String buildFfprobeArguments(String filePath) =>
-      "-i ${wrapPathInQuotes(filePath)} -show_entries stream=width,height,duration -of json";
+    "-i ${wrapPathInQuotes(filePath)} -show_entries stream=width,height,duration -of json";
 
-  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async { // TODO Move some of these variables to this class
+//  static String buildFFPlayArguments(String filePath, String xmapPath, String ymapPath) =>
+//    '-i ${wrapPathInQuotes(filePath)} -vf "movie=${wrapPathInQuotes(xmapPath)}[x]; movie=${wrapPathInQuotes(ymapPath)}[y]; [in][x][y]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)}"';
+
+  static String buildFFPlayArgumentsNew(
+    String filePath,
+    String xmapPath,
+    String ymapPath,
+  ) =>
+    '-i "${filePath}" '
+    '-vf "movie=${wrapFilterPath(xmapPath)}[x]; '
+    "movie=${wrapFilterPath(ymapPath)}[y]; "
+    '[in][x][y]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)}" ';
+
+  static String escapeFilterPath(String path) {
+  return path
+      .replaceAll(r'\', r'\\')
+      .replaceAll(':', r'\:');
+  }
+
+  static String wrapFilterPath(String path) =>
+    "'${escapeFilterPath(path)}'";
+
+  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async {
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, "sooperview-temp.$videoFormat");
 

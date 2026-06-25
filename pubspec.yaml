@@ -31,6 +31,6 @@ flutter:
   uses-material-design: true
 
 ffmpeg_kit_extended_config:
-  type: "full" # pre-bundled builds: debug, base, full, audio, video, video_hw
+  type: "video_hw" # pre-bundled builds: debug, base, full, audio, video, video_hw
   gpl: true # enable to include GPL libraries
   small: true # enable to use smaller builds

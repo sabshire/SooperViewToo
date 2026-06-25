@@ -28,5 +28,15 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>We need access to your Documents folder to save and manage your files.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>We need access to your Downloads folder to read and save files.</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>We need access to files from cloud providers like iCloud Drive.</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>We need access to your Desktop folder to read and save video files.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>We need access to removable drives to read and save video files.</string>
 </dict>
 </plist>

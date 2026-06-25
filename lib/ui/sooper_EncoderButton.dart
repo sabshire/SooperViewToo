@@ -78,6 +78,7 @@ class SooperEncoderButton extends StatelessWidget {
           FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
         }  else {
           onFailure?.call();
+          print(session.getLogsAsString());
         }
 
         if (FileManager.NextSelectedFileExists()) {

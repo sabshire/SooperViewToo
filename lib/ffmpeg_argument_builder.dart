@@ -312,8 +312,9 @@ class FfmpegArgumentBuilder {
   static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async {
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, "sooperview-temp.$videoFormat");
-
-    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${GetCRFArgument()} ${GetPresetArgument()} ${GetPixelFormat()} ${path}";
+    String fileTag = ""; // For HEVC file tag to fix mac quicktime problems
+    if (selectedEncoder == "HEVC") { fileTag = " -tag:v hvc1"; } // TODO: Make this into a setting!
+    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${GetCRFArgument()} ${GetPresetArgument()} ${GetPixelFormat()}$fileTag ${path}";
   }
 
   static String wrapPathInQuotes(String path) => "'$path'";

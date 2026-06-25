@@ -113,6 +113,12 @@ class RemapFileGenerator {
   Future<Map<String, String>> generateCrossPlatformRemapFiles(VideoProperties vidProperties) async {
     // 1. Resolve safe local temporary workspace cache natively on iOS/Android/Desktop
     final Directory tempDir = await getTemporaryDirectory();
+    
+    // Ensure the directory exists (macOS sandbox may not create it automatically)
+    if (!await tempDir.exists()) {
+      await tempDir.create(recursive: true);
+    }
+    
     final String outputDirectory = tempDir.path;
 
     final xmapPath = p.join(outputDirectory, "temp_xmap.pgm");
@@ -182,7 +188,9 @@ class RemapFileGenerator {
       }
       
     } catch (exception, stackTrace) {
-      
+      print('ERROR: Failed to generate remap files: $exception');
+      print('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 

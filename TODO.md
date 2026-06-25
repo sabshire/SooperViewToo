@@ -14,3 +14,5 @@ List of bugs that need fixed (I added this recently so some older bugs I probabl
 - Split up encoder settings and file selector to separate windows to make it look more clean on small devices. No scroll! Maybe make it encode button be on the corner like a floating button or two. (For start cancel)
 
 - Add a file selector to ffplay preview window widget. Make it only capable of having one selected, so instead of a check box just have a button that says like "Preview" in green. Then that will start the ffplay window preview. 
+
+- Make HVC1 file tagging a setting! This is mostly useful for apple devices!

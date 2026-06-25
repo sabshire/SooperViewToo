@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/widgets.dart';
 import 'package:open_file_manager/open_file_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -13,11 +14,14 @@ class FileManager {
   static List<File> fileList = [];
   static List<File> selectedFileList = [];
   static int currentFile = 0;
+  static final ValueNotifier<int> fileCount = ValueNotifier<int>(0);
+  static final ValueNotifier<int> selectedFileCount = ValueNotifier<int>(0);
 
   static String? outputPath;
 
   static void AddFile(List<File> files) {
     fileList.addAll(files);
+    fileCount.value++;
   }
 
   static File? GetCurrentSelectedFile() {
@@ -40,18 +44,22 @@ class FileManager {
 
   static void RemoveCurrentFile() {
     fileList.removeAt(currentFile);
+    fileCount.value--;
   }
 
   static void RemoveFile(File file) {
     fileList.remove(file);
+    fileCount.value--;
   }
 
   static void AddToSelectedFiles(File file) {
     selectedFileList.add(file);
+    selectedFileCount.value++;
   }
 
   static void RemoveFromSelectedFiles(File file) {
     selectedFileList.remove(file);
+    selectedFileCount.value--;
   }
 
   static Future<void> moveExistingTempFile(String sourceFileStr, File selectedFile) async {

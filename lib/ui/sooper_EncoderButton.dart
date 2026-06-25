@@ -34,11 +34,11 @@ class SooperEncoderButton extends StatelessWidget {
     if (!permissionsGood) return;
     FileManager.GetOutputDir();
     
-    FFmpegManager.encoderStatus = SooperEncoderStatus.probe;
+    FFmpegManager.encoderStatus.value = SooperEncoderStatus.probe;
     onPressed?.call();
     FFmpegManager.ffprobeSession = await FFprobeKit.getMediaInformationAsync("'${FileManager.GetCurrentSelectedFile()?.path}'", onComplete: (session) async {
     //await FFprobeKit.executeAsync(cmd, onComplete: (session) async {
-      FFmpegManager.encoderStatus = SooperEncoderStatus.encode;
+      FFmpegManager.encoderStatus.value = SooperEncoderStatus.encode;
       print(session.command);
       final result = session.getLogsAsString();
       print(result);
@@ -65,9 +65,9 @@ class SooperEncoderButton extends StatelessWidget {
 
       await FFmpegManager.ffmpegSession!.executeAsync(completeCallback: (session) async {
         final returnCode = session.getReturnCode();
-        if (FFmpegManager.encoderStatus == SooperEncoderStatus.cancelling) {
-          FFmpegManager.encoderStatus = SooperEncoderStatus.none;
-          FFmpegManager.ffmpegProgressPercentage = 0;
+        if (FFmpegManager.encoderStatus.value == SooperEncoderStatus.cancelling) {
+          FFmpegManager.encoderStatus.value = SooperEncoderStatus.none;
+          FFmpegManager.ffmpegProgressPercentage.value = 0;
           FFmpegManager.onFinish();
           onCancelled?.call();
           return;
@@ -75,6 +75,7 @@ class SooperEncoderButton extends StatelessWidget {
         if (ReturnCode.isSuccess(returnCode)) {
           // Call complete event
           onComplete?.call();
+          FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
         }  else {
           onFailure?.call();
         }
@@ -82,20 +83,21 @@ class SooperEncoderButton extends StatelessWidget {
         if (FileManager.NextSelectedFileExists()) {
           // Another file needs encoding
           FileManager.NextSelectedFile();
-          FFmpegManager.ffmpegProgressPercentage = 0;
+          FFmpegManager.ffmpegProgressPercentage.value = 0;
           encode();
         } else {
           // Encoding is done
-          FFmpegManager.encoderStatus = SooperEncoderStatus.finish;
+          FFmpegManager.encoderStatus.value = SooperEncoderStatus.finish;
           onFinished?.call();
+          FFmpegManager.ffmpegProgressPercentage.value = 0;
           FFmpegManager.onFinish();
         }
 
 
       }, statisticsCallback: (statistics) async {
         //print(statistics.transcodingProgressPercent);
-        FFmpegManager.ffmpegProgressPercentage = ((statistics.videoFrameNumber / FFmpegManager.ffmpegTotalFrameNum) * 100);
-        onProgressUpdate?.call(FFmpegManager.ffmpegProgressPercentage);
+        FFmpegManager.ffmpegProgressPercentage.value = ((statistics.videoFrameNumber / FFmpegManager.ffmpegTotalFrameNum) * 100);
+        onProgressUpdate?.call(FFmpegManager.ffmpegProgressPercentage.value);
       },);
     });
   }
@@ -103,7 +105,7 @@ class SooperEncoderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: ((FFmpegManager.encoderStatus != SooperEncoderStatus.none) || (FileManager.selectedFileList.isEmpty)) ? null : encode,
+      onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileList.isEmpty)) ? null : encode,
       icon: const Icon(Icons.play_arrow, color: Colors.green,),
       label: const Text('Encode'),
     );

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sooperview/FileManager.dart';
 
 // Status Types for encoder
@@ -18,8 +19,10 @@ class FFmpegManager {
 
   static int ffmpegCurrentFrameNum = 0;
   static int ffmpegTotalFrameNum = 0;
-  static double ffmpegProgressPercentage = 0;
-  static SooperEncoderStatus encoderStatus = SooperEncoderStatus.none;
+  //static double ffmpegProgressPercentage = 0;
+  static final ValueNotifier<double> ffmpegProgressPercentage = ValueNotifier<double>(0);
+  //static SooperEncoderStatus encoderStatus = SooperEncoderStatus.none;
+  static final ValueNotifier<SooperEncoderStatus> encoderStatus = ValueNotifier<SooperEncoderStatus>(SooperEncoderStatus.none);
   //static bool isEncoding = false; // This is used in SooperEncoderButton to know if a current encoding session is running to disable button
 
   static FFplaySession? ffplaySession;

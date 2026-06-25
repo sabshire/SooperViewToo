@@ -102,7 +102,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
   Widget build(BuildContext context) {
     final percentage = (_animation.value * 100).toInt();
     //final isComplete = _animation.value >= 1.0;
-    final isComplete = FFmpegManager.encoderStatus == SooperEncoderStatus.finish;
+    final isComplete = FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish;
 
 
     return Center(
@@ -162,7 +162,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                             width: widget.size / 1.5,  // Increase this value to make it bigger
                             height: widget.size / 1.5, // Keep width and height identical
                             child: CircularProgressIndicator(
-                              value: FFmpegManager.encoderStatus == SooperEncoderStatus.finish ? 1.0 :  _animation.value,
+                              value: FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish ? 1.0 :  _animation.value,
                               strokeWidth: widget.strokeWidth,
                               backgroundColor: Colors.transparent,
                               valueColor: AlwaysStoppedAnimation(
@@ -209,7 +209,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                     ),
                                   ),
                                   Text(
-                                    '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus)}',
+                                    '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
@@ -288,7 +288,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
 
   Widget _buildActionButton() {
     final isFinished =
-        FFmpegManager.encoderStatus == SooperEncoderStatus.finish;
+        FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish;
 
     return SizedBox(
       width: double.infinity,

@@ -16,3 +16,5 @@ List of bugs that need fixed (I added this recently so some older bugs I probabl
 - Add a file selector to ffplay preview window widget. Make it only capable of having one selected, so instead of a check box just have a button that says like "Preview" in green. Then that will start the ffplay window preview. 
 
 - Make HVC1 file tagging a setting! This is mostly useful for apple devices!
+
+- Reduce file size by changing package type in ffmpeg extended kit from full to video_hw? (Needs testing to make sure works!)

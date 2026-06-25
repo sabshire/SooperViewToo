@@ -39,7 +39,7 @@ class FfmpegArgumentBuilder {
     ('NVIDIA', 'AV1'): '-c:v av1_nvenc',
     ('AMD', 'AV1'): '-c:v av1_amf',
     ('INTEL', 'AV1'): '-c:v av1_qsv',
-    ('MacOS', 'AV1'): '-c:v av1_videotoolbox',
+    //('MacOS', 'AV1'): '-c:v av1_videotoolbox', // Doesn't seem to work (maybe different encoder name?)
     //('Android', 'AV1'): '-c:v av1_mediacodec',
     
   };

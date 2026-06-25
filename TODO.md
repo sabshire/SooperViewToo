@@ -17,4 +17,4 @@ List of bugs that need fixed (I added this recently so some older bugs I probabl
 
 - Make HVC1 file tagging a setting! This is mostly useful for apple devices!
 
-- Reduce file size by changing package type in ffmpeg extended kit from full to video_hw? (Needs testing to make sure works!)
+- Figure out if MacOS has a hardware encoder for AV1

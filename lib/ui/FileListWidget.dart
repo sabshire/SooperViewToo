@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-//import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sooperview/FileManager.dart';
 
@@ -36,28 +35,8 @@ class _FileListWidgetState extends State<FileListWidget> {
 
     widget.onSelectionUpdate?.call();
   }
-  /*
-  Future<void> _handleDroppedFiles(List<DropItem> items) async {
-    final List<File> newFiles = [];
 
-    for (final item in items) {
-      final path = item.path;
-
-      final file = File(path);
-
-      if (await file.exists() && !FileManager.fileList.any((e) => e.path == file.path)) {
-        newFiles.add(file);
-      }
-    }
-
-    if (newFiles.isNotEmpty) {
-      setState(() {
-        FileManager.AddFile(newFiles);
-      });
-    }
-  }*/
-
-  Widget _buildFileListUI() {
+  Widget _buildFileListUI(BuildContext context) {
     return ListenableBuilder(
       // Listen to both file additions/removals and selection changes
       listenable: Listenable.merge([
@@ -70,7 +49,7 @@ class _FileListWidgetState extends State<FileListWidget> {
 
         return Container(
           width: double.infinity,
-          constraints: const BoxConstraints(maxHeight: 400),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.5),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(8),
@@ -87,7 +66,7 @@ class _FileListWidgetState extends State<FileListWidget> {
                   ),
                 )
               : ListView.builder(
-                  shrinkWrap: true,
+                  shrinkWrap: false,
                   physics: const AlwaysScrollableScrollPhysics(),
                   itemCount: files.length,
                   itemBuilder: (context, index) {
@@ -131,6 +110,6 @@ class _FileListWidgetState extends State<FileListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildFileListUI();
+    return _buildFileListUI(context);
   }
 }

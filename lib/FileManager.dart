@@ -109,4 +109,10 @@ class FileManager {
     return outputPath!;
   }
 
+  static Future<void> CleanCache() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      FilePicker.platform.clearTemporaryFiles();
+    }
+  }
+
 }

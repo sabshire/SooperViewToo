@@ -1,7 +1,7 @@
 name: sooperview
 description: "Converts 4:3 videos to 16:9"
 publish_to: 'none'
-version: 0.1.5+1
+version: 0.1.6+1
 
 environment:
   sdk: ^3.12.1

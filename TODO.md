@@ -6,8 +6,6 @@ List of bugs that need fixed (I added this recently so some older bugs I probabl
 
 - 480p doesn't seem to work on ffplay, works on ffmpeg encode though (maybe colorspace issue?)
 
-- Cache doesn't clean itself. Grows overtime everytime you add a file/encode
-
 
 ============= TODOs =============
 

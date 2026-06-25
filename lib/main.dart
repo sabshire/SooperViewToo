@@ -22,13 +22,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FFmpegKitExtended.initialize();
   //FileManager.SetOutputDir();
-  if (Platform.isIOS || Platform.isAndroid) {
+  /*if (Platform.isIOS || Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // Makes status bar background transparent
     statusBarIconBrightness: Brightness.dark, // Dark icons for light backgrounds
     statusBarBrightness: Brightness.light, // For iOS status bar icons
   ));
-  }
+  }*/
+
+  FileManager.CleanCache(); // Cleans cache on startup (Only affects mobile devices)
+
   runApp(const MainApp());
 }
 

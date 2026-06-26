@@ -419,7 +419,7 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
 
     return Column(
       children: [
-        Text("Drag and drop your files here!"),
+        SizedBox(height: 20),
         FileListWidget(
           fileList: FileManager.fileList,
           onRemove: (file) => FileManager.RemoveFile(file),

@@ -29,21 +29,26 @@ class _SooperDropdownState<T> extends State<SooperDropdown<T>> {
         border: Border.all(color: Colors.grey.shade300, width: 1.5),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: DropdownButton<T>(
-        value: widget.dropdownValue,
-        icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-        hint: const Text("Processor", style: TextStyle(fontStyle: FontStyle.italic)),
-        isExpanded: true,
-        items: widget.dropdownValueList.map((T value) {
-          return DropdownMenuItem<T>(
-            value: value,
-            child: Text(value.toString(), style: const TextStyle(fontSize: 14)),
-          );
-        }).toList(),
-        onChanged: (T? value) {
-          widget.onStateChanged(value); // Sends event to where this widget is instantiated. When they on SetState to set their value this will refresh this.
-        },
-      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          focusColor: Colors.transparent
+        ),
+        child: DropdownButton<T>(
+          value: widget.dropdownValue,
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+          hint: const Text("Processor", style: TextStyle(fontStyle: FontStyle.italic)),
+          isExpanded: true,
+          items: widget.dropdownValueList.map((T value) {
+            return DropdownMenuItem<T>(
+              value: value,
+              child: Text(value.toString(), style: const TextStyle(fontSize: 14)),
+            );
+          }).toList(),
+          onChanged: (T? value) {
+            widget.onStateChanged(value); // Sends event to where this widget is instantiated. When they on SetState to set their value this will refresh this.
+          },
+        ),
+      )
     );
   }
 }

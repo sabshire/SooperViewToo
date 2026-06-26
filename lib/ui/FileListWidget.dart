@@ -49,7 +49,10 @@ class _FileListWidgetState extends State<FileListWidget> {
 
         return Container(
           width: double.infinity,
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.5),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.5,
+            maxWidth: MediaQuery.of(context).size.width - 40
+          ),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(8),

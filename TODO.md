@@ -1,4 +1,4 @@
-List of bugs that need fixed (I added this recently so some older bugs I probably forgot about need to be added)
+List of bugs and TODOs that need fixed (I added this recently so some older bugs I probably forgot about need to be added)
 
 ============= BUGS =============
 
@@ -17,6 +17,6 @@ List of bugs that need fixed (I added this recently so some older bugs I probabl
 
 - Figure out if MacOS has a hardware encoder for AV1
 
-- Add button to set / change output folder location. (Also display current output folder)
+- Set output path button doesn't seem to refresh page to update directory display text below it
 
 - Add button to save current settings

@@ -100,11 +100,15 @@ class FileManager {
     return outputPath!;
   }
 
-  static Future<String> SetOutputDir() async {
+  static Future<String> SetOutputDir({bool manuallySet = false}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (manuallySet) {
+      outputPath = await FilePicker.platform.getDirectoryPath(dialogTitle: "Choose your output location");
+    }
     while (outputPath == null) {
       outputPath = await FilePicker.platform.getDirectoryPath(dialogTitle: "Choose your output location");
     }
+    
     prefs.setString("OUTPUT_DIR", outputPath!);
     return outputPath!;
   }

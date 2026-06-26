@@ -428,11 +428,25 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
           }),
         ),
 
+        // Add Files Button
         const SizedBox(height: 30),
         ElevatedButton.icon(
           onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) ? pickFile : null,
           icon: const Icon(Icons.add),
           label: const Text('Choose Video'),
+        ),
+
+        // Set Output Dir Button
+        const SizedBox(height: 20),
+        ElevatedButton.icon(
+        onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
+          ? () { 
+              setState(() {
+                FileManager.SetOutputDir(manuallySet: true); 
+              });
+            } : null,          
+          icon: const Icon(Icons.folder),
+          label: const Text('Set Output Folder'),
         ),
 
         const SizedBox(height: 20),
@@ -460,10 +474,11 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
           }),*/
         ),
         const SizedBox(height: 20),
-        TextButton(
+        /*TextButton(
           onPressed: _openOutputFolder,
           child: const Text('Open Output'),
-        ),
+        ),*/
+        Text("Current Output Dir: ${FileManager.outputPath}"),
 
       ],
     );

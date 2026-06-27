@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:open_file_manager/open_file_manager.dart';
 import 'package:sooperview/FFmpegManager.dart';
 import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/SaveManager.dart';
 
 
 import 'package:sooperview/ffmpeg_argument_builder.dart';
@@ -21,6 +22,7 @@ import 'package:sooperview/ui/sooper_labelwidget.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FFmpegKitExtended.initialize();
+  await SaveManager.LoadSettings();
   //FileManager.SetOutputDir();
   /*if (Platform.isIOS || Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -154,6 +156,7 @@ class SooperViewMainState extends State<SooperViewScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
+              spacing: 20,
               children: [
                 const SizedBox(height: 20),
                 
@@ -191,7 +194,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
 
                 // Settings Row 2: Resolution and CRF
                 Row(
@@ -227,7 +229,6 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20), // Padding
                 // Row 3 (Colorspace, Presets)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -266,69 +267,40 @@ class SooperViewMainState extends State<SooperViewScreen> {
                     ],
                 ),                
 
-                // End of Dropdowns
 
-                //if (FileManager.GetCurrentFile() != null)  // Displays Current Selected File
-                //  Text(_status),
+                // Row 4 (Load and Save Settings Buttons)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  spacing: 16,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
+                          await SaveManager.LoadDefaultSettings();
+                          setState(() {
+                            // Load Default Settings done
+                          });
+                        },
+                        label: const Text('Load Defaults'),
+                      ),
+                    ),
 
-                /*const SizedBox(height: 30),
-                ElevatedButton.icon(
-                  onPressed: (FFmpegManager.encoderStatus == SooperEncoderStatus.none) ? pickFile : null,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Choose Video'),
+                    // Save Settings Button
+                    if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
+                            await SaveManager.SaveSettings();
+                            setState(() {
+                              // Save New Settings done
+                            });
+                          },
+                          icon: const Icon(Icons.save, color: Colors.blue,),
+                          label: const Text('Save Settings'),
+                        ), 
+                      ),
+                    ],
                 ),
-
-                const SizedBox(height: 20),
-                SooperEncoderButton(
-                  onProgressUpdate: (progressPercentage) => setState(() {
-                    // This should call update for Progress Percentage?
-                  }),
-                  onComplete: () {
-                    setState(() {
-                      FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
-                    });
-                  },
-                  onFinished: () {
-                    setState(() {
-                      // Finished all encoding
-                    });
-                  },
-                  onCancelled: () {
-                    setState(() {
-                      // On Cancelled called and completed
-                    });
-                  },
-                  onPressed: () => setState(() {
-                    
-                  }),
-                ),
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: _openOutputFolder,
-                  child: const Text('Open Output'),
-                ),*/
-                /*if (FFmpegManager.ffmpegProgressPercentage > -1) ...[
-                  const SizedBox(height: 20),
-                  Text("Progress: ${FFmpegManager.ffmpegProgressPercentage.toStringAsFixed(2)}% ${(FileManager.currentFile + 1)}/${FileManager.selectedFileList.length}"),
-                ],
-                if (FFmpegManager.ffmpegSession != null) ...[ // TODO: This needs to be better and work in all stages of encoding / ffprobe. Currently only works during encoding!
-                  const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: FFmpegManager.ffmpegSession!.cancel,
-                    icon: const Icon(Icons.close, color: Colors.red),
-                    label: const Text('Cancel'),
-                  ),
-                ],*/
-                //if (FileManager.fileList.isNotEmpty)
-                /*if (true)
-                  FileListWidget(
-                    fileList: FileManager.fileList,
-                    onRemove: (file) => setState(() => FileManager.RemoveFile(file)),
-                    onSelectionUpdate: () => setState(() {
-                      
-                    }),
-                  ),
-                */
               ],
             ),
           ),

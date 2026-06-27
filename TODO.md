@@ -18,5 +18,3 @@ List of bugs and TODOs that need fixed (I added this recently so some older bugs
 - Figure out if MacOS has a hardware encoder for AV1
 
 - Set output path button doesn't seem to refresh page to update directory display text below it
-
-- Add button to save current settings

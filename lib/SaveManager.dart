@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sooperview/FileManager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 
 class SaveManager {
@@ -42,6 +43,11 @@ class SaveManager {
       var preset = prefs.getString("Preset")!;
       if (preset.isNotEmpty) { FfmpegArgumentBuilder.SetCurrentPresetValue(preset); }
     }
+
+    if (prefs.containsKey("OUTPUT_DIR")) {
+      var outputDir = prefs.getString("OUTPUT_DIR")!;
+      if (outputDir.isNotEmpty) { FileManager.outputPath = outputDir; }
+    }    
   }
 
   static Future<void> SaveSettings() async {

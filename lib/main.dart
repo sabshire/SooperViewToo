@@ -412,10 +412,9 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
         const SizedBox(height: 20),
         ElevatedButton.icon(
         onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
-          ? () { 
-              setState(() {
-                FileManager.SetOutputDir(manuallySet: true); 
-              });
+          ? () async {
+              await FileManager.SetOutputDir(manuallySet: true);
+              setState(() {});
             } : null,          
           icon: const Icon(Icons.folder),
           label: const Text('Set Output Folder'),
@@ -450,7 +449,7 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
           onPressed: _openOutputFolder,
           child: const Text('Open Output'),
         ),*/
-        Text("Current Output Dir: ${FileManager.outputPath}"),
+        Text("Current Output Dir: ${FileManager.outputPath ?? "Not Set"}"),
 
       ],
     );

@@ -49,10 +49,9 @@ class _FileListWidgetState extends State<FileListWidget> {
 
         return Container(
           width: double.infinity,
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.5,
-            maxWidth: MediaQuery.of(context).size.width - 40
-          ),
+          //constraints: BoxConstraints(
+            //maxWidth: MediaQuery.of(context).size.width - 40
+          //),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(8),
@@ -64,7 +63,7 @@ class _FileListWidgetState extends State<FileListWidget> {
                     children: const [
                       Icon(Icons.cloud_upload, size: 48, color: Colors.grey),
                       SizedBox(height: 8),
-                      Text('No files added'),
+                      Text('Drag Files Here'),
                     ],
                   ),
                 )

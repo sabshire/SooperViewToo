@@ -32,7 +32,7 @@ class SooperEncoderButton extends StatelessWidget {
   Future<void> encode() async {
     bool permissionsGood = await PermissionHandler.HasNeededPermissions();
     if (!permissionsGood) return;
-    FileManager.GetOutputDir();
+    await FileManager.GetOutputDir();
     
     FFmpegManager.encoderStatus.value = SooperEncoderStatus.probe;
     onPressed?.call();

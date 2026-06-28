@@ -16,7 +16,7 @@ import 'package:sooperview/ui/FileListWidget.dart';
 import 'package:sooperview/ui/sooper_EncoderButton.dart';
 // UI imports
 import 'package:sooperview/ui/sooper_dropdown.dart';
-import 'package:sooperview/ui/sooper_ffplay_preview_window.dart';
+//import 'package:sooperview/ui/sooper_ffplay_preview_window.dart';
 import 'package:sooperview/ui/sooper_labelwidget.dart';
 
 void main() async {
@@ -70,238 +70,173 @@ class SooperViewScreen extends StatefulWidget {
 }
 
 class SooperViewMainState extends State<SooperViewScreen> {
-  //File? _selectedFile;
-  //bool _isEncoding = false;
-  //String? _outputPath;
-  //int _totalFrames = 0;
-  //FFmpegSession? ffmpeg;
-
-  /*
-  Future<void> pickFile() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.video, allowMultiple: true);
-    if (result != null && result.files.isNotEmpty) {
-      //final filePath = result.files.single.path;
-      List<File> files = [];
-      for (int fileNum = 0; fileNum < result.files.length; fileNum++) {
-        if (result.files[fileNum].path == null) continue;
-        files.add(File(result.files[fileNum].path!));
-      }
-      
-      setState(() {
-        FileManager.AddFile(files);
-      });
-    }
-  }
-  
-  Future<void> _openOutputFolder() async {
-    if (Platform.isAndroid) {
-      // Android uses specific intent targets to reach the Files app safely
-      await openFileManager(
-        androidConfig: AndroidConfig(
-          folderType: AndroidFolderType.other,
-          folderPath: await FileManager.GetOutputDir(),
-        ),
-      );
-    } 
-    else if (Platform.isWindows) {
-      // Windows: Trigger explorer.exe
-      await Process.run('explorer.exe', [await FileManager.GetOutputDir()]);
-    } 
-    else if (Platform.isMacOS) {
-      // macOS: Trigger the 'open' command to launch Finder
-      await Process.run('open', [await FileManager.GetOutputDir()]);
-    } 
-    else if (Platform.isLinux) {
-      // Linux: Trigger xdg-open to load the desktop-assigned file manager
-      await Process.run('xdg-open', [await FileManager.GetOutputDir()]);
-    }
-  }*/
-
   @override
   Widget build(BuildContext context) {
-    /*if (FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) {
-      return EncodingProgressWidget(
-        progress: ((FileManager.currentFile) / FileManager.selectedFileList.length) + (FFmpegManager.ffmpegProgressPercentage / 100 / FileManager.selectedFileList.length),
-        onExitWidget: () {
-          setState(() {
-            FFmpegManager.encoderStatus.value = SooperEncoderStatus.none;
-          });
-        },
-        onCancelEncode: () {
-          setState(() {
-            switch(FFmpegManager.encoderStatus.value) {
-              case SooperEncoderStatus.encode:
-              case SooperEncoderStatus.probe:
-              FFmpegManager.encoderStatus.value = SooperEncoderStatus.cancelling;
-                FFmpegKitExtended.cancelAllSessions();
-              break;
-
-              case SooperEncoderStatus.finish:
-              default:
-                FFmpegManager.encoderStatus.value = SooperEncoderStatus.none;
-              break;
-            }
-          });
-        },
-        );
-    }*/
-
     return Scaffold(
       //appBar: AppBar(title: const Text('SooperView Dev'),),
       body: ConstrainedBox(
-        constraints: BoxConstraints(minWidth: 300, maxWidth: double.infinity),
+        constraints: BoxConstraints(
+          minWidth: 300, 
+          maxWidth: double.infinity,
+        ),
         child: Padding(
           padding: const EdgeInsets.all(30),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              spacing: 20,
-              children: [
-                const SizedBox(height: 20),
-                
-                // Settings Row 1: Hardware and Encoder
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: SooperLabel(
-                        label: "Hardware",
-                        child: SooperDropdown(
-                          dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
-                          dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
-                          onStateChanged: (hardwareValue) {
-                            setState(() {
-                              FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: SooperLabel(
-                        label: "Encoder",
-                        child: SooperDropdown(
-                          dropdownValue: FfmpegArgumentBuilder.selectedEncoder, 
-                          dropdownValueList: FfmpegArgumentBuilder.encoderItems,
-                          onStateChanged: (encoderValue) {
-                            setState(() {
-                              FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.encoderItems[0];
-                            });
-                          },
-                        ),
-                      )
-                    ),
-                  ],
-                ),
-
-                // Settings Row 2: Resolution and CRF
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: SooperLabel(
-                        label: "Resolution",
-                        child: SooperDropdown(
-                          dropdownValue: FfmpegArgumentBuilder.selectedResolution, 
-                          dropdownValueList: FfmpegArgumentBuilder.resolutionItems,
-                          onStateChanged: (resolutionValue) {
-                            setState(() {
-                              FfmpegArgumentBuilder.selectedResolution = resolutionValue ?? FfmpegArgumentBuilder.resolutionItems[0];
-                            });
-                          },
-                        ),
-                      )
-                    ),
-                    Expanded(
-                      child: SooperLabel(
-                        label: "CRF",
-                        child: SooperDropdown<int>(
-                          dropdownValue: FfmpegArgumentBuilder.GetCRFValue(), 
-                          dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(),
-                          onStateChanged: (int? crfValue) {
-                            setState(() {
-                              FfmpegArgumentBuilder.SetCRFValue(crfValue!);
-                            });
-                          },
-                        ),
-                      )
-                    ),
-                  ],
-                ),
-                // Row 3 (Colorspace, Presets)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: SooperLabel(
-                        label: "Colorspace",
-                        child: SooperDropdown(
-                          dropdownValue: FfmpegArgumentBuilder.selectedColorspace, 
-                          dropdownValueList: FfmpegArgumentBuilder.colorspaceItems,
-                          onStateChanged: (colorspaceValue) {
-                            setState(() {
-                              FfmpegArgumentBuilder.selectedColorspace = colorspaceValue ?? '8-bit';
-                            });
-                          },
-                        ),
-                      )
-                    ),
-
-                    // PRESET VALUES
-                    if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,              
+                spacing: 20,
+                children: [
+                  const SizedBox(height: 20),
+                  
+                  // Settings Row 1: Hardware and Encoder
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                       Expanded(
                         child: SooperLabel(
-                          label: "Preset",
+                          label: "Hardware",
                           child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(), 
-                            dropdownValueList: FfmpegArgumentBuilder.GetCurrentPresetList()!,
-                            onStateChanged: (presetValue) {
+                            dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
+                            dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
+                            onStateChanged: (hardwareValue) {
                               setState(() {
-                                setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(presetValue!));
+                                FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: SooperLabel(
+                          label: "Encoder",
+                          child: SooperDropdown(
+                            dropdownValue: FfmpegArgumentBuilder.selectedEncoder, 
+                            dropdownValueList: FfmpegArgumentBuilder.encoderItems,
+                            onStateChanged: (encoderValue) {
+                              setState(() {
+                                FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.encoderItems[0];
                               });
                             },
                           ),
                         )
                       ),
                     ],
-                ),                
+                  ),
 
-
-                // Row 4 (Load and Save Settings Buttons)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  spacing: 16,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                          await SaveManager.LoadDefaultSettings();
-                          setState(() {
-                            // Load Default Settings done
-                          });
-                        },
-                        label: const Text('Load Defaults'),
+                  // Settings Row 2: Resolution and CRF
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: SooperLabel(
+                          label: "Resolution",
+                          child: SooperDropdown(
+                            dropdownValue: FfmpegArgumentBuilder.selectedResolution, 
+                            dropdownValueList: FfmpegArgumentBuilder.resolutionItems,
+                            onStateChanged: (resolutionValue) {
+                              setState(() {
+                                FfmpegArgumentBuilder.selectedResolution = resolutionValue ?? FfmpegArgumentBuilder.resolutionItems[0];
+                              });
+                            },
+                          ),
+                        )
                       ),
-                    ),
+                      Expanded(
+                        child: SooperLabel(
+                          label: "CRF",
+                          child: SooperDropdown<int>(
+                            dropdownValue: FfmpegArgumentBuilder.GetCRFValue(), 
+                            dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(),
+                            onStateChanged: (int? crfValue) {
+                              setState(() {
+                                FfmpegArgumentBuilder.SetCRFValue(crfValue!);
+                              });
+                            },
+                          ),
+                        )
+                      ),
+                    ],
+                  ),
+                  // Row 3 (Colorspace, Presets)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: SooperLabel(
+                          label: "Colorspace",
+                          child: SooperDropdown(
+                            dropdownValue: FfmpegArgumentBuilder.selectedColorspace, 
+                            dropdownValueList: FfmpegArgumentBuilder.colorspaceItems,
+                            onStateChanged: (colorspaceValue) {
+                              setState(() {
+                                FfmpegArgumentBuilder.selectedColorspace = colorspaceValue ?? '8-bit';
+                              });
+                            },
+                          ),
+                        )
+                      ),
 
-                    // Save Settings Button
-                    if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
+                      // PRESET VALUES
+                      if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
+                        Expanded(
+                          child: SooperLabel(
+                            label: "Preset",
+                            child: SooperDropdown(
+                              dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(), 
+                              dropdownValueList: FfmpegArgumentBuilder.GetCurrentPresetList()!,
+                              onStateChanged: (presetValue) {
+                                setState(() {
+                                  setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(presetValue!));
+                                });
+                              },
+                            ),
+                          )
+                        ),
+                      ],
+                  ),                
+
+                  // Row 4 (Load and Save Settings Buttons)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    spacing: 16,
+                    children: [
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                            await SaveManager.SaveSettings();
+                            await SaveManager.LoadDefaultSettings();
                             setState(() {
-                              // Save New Settings done
+                              // Load Default Settings done
                             });
                           },
-                          icon: const Icon(Icons.save, color: Colors.blue,),
-                          label: const Text('Save Settings'),
-                        ), 
+                          label: const Text('Load Defaults'),
+                        ),
                       ),
-                    ],
-                ),
-              ],
+
+                      // Save Settings Button
+                      if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
+                              await SaveManager.SaveSettings();
+                              setState(() {
+                                // Save New Settings done
+                              });
+                            },
+                            icon: const Icon(Icons.save, color: Colors.blue,),
+                            label: const Text('Save Settings'),
+                          ), 
+                        ),
+                      ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -361,97 +296,43 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(30),
+      child: Column(
+        spacing: 20,
+        children: [
+          Expanded(
+            child: (
+              FileListWidget(
+                fileList: FileManager.fileList,
+                onRemove: (file) => FileManager.RemoveFile(file),
+                onSelectionUpdate: () => setState(() {
+                  // Updates on selecting for UI
+                }),
+              )
+            )
+          ),
+          // Add Files Button
+          ElevatedButton.icon(
+            onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) ? pickFile : null,
+            icon: const Icon(Icons.add),
+            label: const Text('Choose Video(s)'),
+          ),
 
-    /*if (FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) {
-      return EncodingProgressWidget(
-        progress: ((FileManager.currentFile) / FileManager.selectedFileList.length) + (FFmpegManager.ffmpegProgressPercentage / 100 / FileManager.selectedFileList.length),
-        onExitWidget: () {
-          setState(() {
-            FFmpegManager.encoderStatus.value = SooperEncoderStatus.none;
-          });
-        },
-        onCancelEncode: () {
-          setState(() {
-            switch(FFmpegManager.encoderStatus.value) {
-              case SooperEncoderStatus.encode:
-              case SooperEncoderStatus.probe:
-              FFmpegManager.encoderStatus.value = SooperEncoderStatus.cancelling;
-                FFmpegKitExtended.cancelAllSessions();
-              break;
-
-              case SooperEncoderStatus.finish:
-              default:
-                FFmpegManager.encoderStatus.value = SooperEncoderStatus.none;
-              break;
-            }
-          });
-        },
-        );
-    }*/
-
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        FileListWidget(
-          fileList: FileManager.fileList,
-          onRemove: (file) => FileManager.RemoveFile(file),
-          onSelectionUpdate: () => setState(() {
-            // Updates on selecting for UI
-          }),
-        ),
-
-        // Add Files Button
-        const SizedBox(height: 30),
-        ElevatedButton.icon(
-          onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) ? pickFile : null,
-          icon: const Icon(Icons.add),
-          label: const Text('Choose Video'),
-        ),
-
-        // Set Output Dir Button
-        const SizedBox(height: 20),
-        ElevatedButton.icon(
-        onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
-          ? () async {
-              await FileManager.SetOutputDir(manuallySet: true);
-              setState(() {});
-            } : null,          
-          icon: const Icon(Icons.folder),
-          label: const Text('Set Output Folder'),
-        ),
-
-        const SizedBox(height: 20),
-        SooperEncoderButton(
-          /*onProgressUpdate: (progressPercentage) => setState(() {
-            // This should call update for Progress Percentage?
-          }),
-          onComplete: () {
-            setState(() {
-              FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
-            });
-          },
-          onFinished: () {
-            setState(() {
-              // Finished all encoding
-            });
-          },
-          onCancelled: () {
-            setState(() {
-              // On Cancelled called and completed
-            });
-          },
-          onPressed: () => setState(() {
-            
-          }),*/
-        ),
-        const SizedBox(height: 20),
-        /*TextButton(
-          onPressed: _openOutputFolder,
-          child: const Text('Open Output'),
-        ),*/
-        Text("Current Output Dir: ${FileManager.outputPath ?? "Not Set"}"),
-
-      ],
+          // Set Output Dir Button
+          ElevatedButton.icon(
+          onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
+            ? () async {
+                await FileManager.SetOutputDir(manuallySet: true);
+                setState(() {});
+              } : null,          
+            icon: const Icon(Icons.folder),
+            label: const Text('Set Output Folder'),
+          ),
+          Text("Current: ${FileManager.outputPath ?? "Not Set"}"),
+          SooperEncoderButton(),
+        ],
+      )
     );
   }
 }
@@ -500,14 +381,14 @@ class HomeTabScreen extends StatelessWidget {
 
         // Condition 2: Default behavior when status is SooperEncoderStatus.none
         return DefaultTabController(
-          length: 3,
+          length: 2,
           initialIndex: 1,
           child: Scaffold(
             bottomNavigationBar: const TabBar(
               tabs: [
                 Tab(text: 'Settings'),
                 Tab(text: 'File Selector'),
-                Tab(text: 'Preview (BETA)')
+                //Tab(text: 'Preview (BETA)')
               ],
               indicatorColor: Colors.white,
               indicatorWeight: 3.0,
@@ -516,7 +397,7 @@ class HomeTabScreen extends StatelessWidget {
               children: [
                 SooperViewScreen(),
                 FileSelectorScreen(),
-                SooperViewPreviewer(),
+                //SooperViewPreviewer(),
               ],
             ),
           ),

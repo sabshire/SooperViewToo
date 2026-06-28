@@ -78,6 +78,19 @@ class FileManager {
     //String newPath = '${}/$fileName';
     String newPath = p.join(await GetOutputDir(), fileName);
 
+    //Ensure we don't overwrite existing files
+    //if dest already exists, we change the name
+    //by appending a number, and retest.  We continue
+    //this until we find a unique name
+    File tempDestFile = File(newPath);
+    int fileCount = 1;
+    while (await tempDestFile.exists()) {
+      fileCount++;
+      fileName = "SV-$fileCount-${p.basename(selectedFile.path)}";
+      newPath = p.join(await GetOutputDir(), fileName);
+      tempDestFile = File(newPath);
+    }
+
     try {
       // 5. Move the file
       // Note: rename() works instantly if on the same storage partition.

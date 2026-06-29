@@ -3,7 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io' show Platform;
 
 class PermissionHandler {
-  static Future<bool> HasNeededPermissions() async {
+  static Future<bool> hasNeededPermissions() async {
     if (!Platform.isAndroid && !Platform.isIOS) return true;
 
     if (await Permission.manageExternalStorage.request().isGranted) {

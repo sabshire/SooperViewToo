@@ -220,20 +220,19 @@ class SooperViewMainState extends State<SooperViewScreen> {
                       ),
 
                       // Save Settings Button
-                      if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                              await SaveManager.SaveSettings();
-                              setState(() {
-                                // Save New Settings done
-                              });
-                            },
-                            icon: const Icon(Icons.save, color: Colors.blue,),
-                            label: const Text('Save Settings'),
-                          ), 
-                        ),
-                      ],
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
+                            await SaveManager.SaveSettings();
+                            setState(() {
+                              // Save New Settings done
+                            });
+                          },
+                          icon: const Icon(Icons.save, color: Colors.blue,),
+                          label: const Text('Save Settings'),
+                        ), 
+                      ),
+                    ],
                   ),
                 ],
               ),

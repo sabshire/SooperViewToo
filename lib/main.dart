@@ -342,7 +342,25 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
             icon: const Icon(Icons.folder),
             label: const Text('Set Output Folder'),
           ),
-          Text("Current: ${FileManager.outputPath ?? "Not Set"}"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 10,
+            children: [
+              Text(
+                "Current:",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold
+                )
+              ),
+              Text(
+                FileManager.outputPath ?? "Not Set",
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.italic
+                )
+              ),
+            ],
+          ),
           SooperEncoderButton(),
         ],
       )

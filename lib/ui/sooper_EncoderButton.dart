@@ -37,7 +37,6 @@ class SooperEncoderButton extends StatelessWidget {
     FFmpegManager.encoderStatus.value = SooperEncoderStatus.probe;
     onPressed?.call();
     FFmpegManager.ffprobeSession = await FFprobeKit.getMediaInformationAsync("'${FileManager.GetCurrentSelectedFile()?.path}'", onComplete: (session) async {
-    //await FFprobeKit.executeAsync(cmd, onComplete: (session) async {
       FFmpegManager.encoderStatus.value = SooperEncoderStatus.encode;
       print(session.command);
       final result = session.getLogsAsString();
@@ -96,7 +95,6 @@ class SooperEncoderButton extends StatelessWidget {
 
 
       }, statisticsCallback: (statistics) async {
-        //print(statistics.transcodingProgressPercent);
         FFmpegManager.ffmpegProgressPercentage.value = ((statistics.videoFrameNumber / FFmpegManager.ffmpegTotalFrameNum) * 100);
         onProgressUpdate?.call(FFmpegManager.ffmpegProgressPercentage.value);
       },);

@@ -6,13 +6,6 @@ class SaveManager {
 
   static Future<void> LoadSettings() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //prefs.remove("Encoder");
-    //prefs.remove("Hardware");
-    //prefs.remove("Colorspace");
-    //prefs.remove("Resolution");
-    //prefs.remove("CRF");
-    //prefs.remove("Preset");
-
 
     if (prefs.containsKey("Encoder")) {
       var enc = prefs.getString("Encoder")!;

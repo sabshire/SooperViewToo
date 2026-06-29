@@ -123,8 +123,6 @@ class RemapFileGenerator {
 
     final xmapPath = p.join(outputDirectory, "temp_xmap.pgm");
     final ymapPath = p.join(outputDirectory, "temp_ymap.pgm");
-    //final xmapPath = '$outputDirectory/temp_xmap.pgm';
-    //final ymapPath = '$outputDirectory/temp_ymap.pgm';
     final targetWidth = (vidProperties.height * 16 / 9).toInt();
 
     // 2. Offload work to an isolated thread to prevent UI freezing

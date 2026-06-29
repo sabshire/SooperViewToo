@@ -23,14 +23,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FFmpegKitExtended.initialize();
   await SaveManager.LoadSettings();
-  //FileManager.SetOutputDir();
-  /*if (Platform.isIOS || Platform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent, // Makes status bar background transparent
-    statusBarIconBrightness: Brightness.dark, // Dark icons for light backgrounds
-    statusBarBrightness: Brightness.light, // For iOS status bar icons
-  ));
-  }*/
 
   FileManager.CleanCache(); // Cleans cache on startup (Only affects mobile devices)
 
@@ -283,30 +275,6 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
     }
   }
   
-  Future<void> _openOutputFolder() async {
-    if (Platform.isAndroid) {
-      // Android uses specific intent targets to reach the Files app safely
-      await openFileManager(
-        androidConfig: AndroidConfig(
-          folderType: AndroidFolderType.other,
-          folderPath: await FileManager.GetOutputDir(),
-        ),
-      );
-    } 
-    else if (Platform.isWindows) {
-      // Windows: Trigger explorer.exe
-      await Process.run('explorer.exe', [await FileManager.GetOutputDir()]);
-    } 
-    else if (Platform.isMacOS) {
-      // macOS: Trigger the 'open' command to launch Finder
-      await Process.run('open', [await FileManager.GetOutputDir()]);
-    } 
-    else if (Platform.isLinux) {
-      // Linux: Trigger xdg-open to load the desktop-assigned file manager
-      await Process.run('xdg-open', [await FileManager.GetOutputDir()]);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(

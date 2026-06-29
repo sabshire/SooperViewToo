@@ -101,7 +101,6 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
   @override
   Widget build(BuildContext context) {
     final percentage = (_animation.value * 100).toInt();
-    //final isComplete = _animation.value >= 1.0;
     final isComplete = FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish;
 
 
@@ -227,21 +226,6 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                     );
                   },
                 ),
-
-                /*const SizedBox(height: 24.0),
-
-                // Progress bar for additional visual feedback
-                LinearProgressIndicator(
-                  value: _animation.value,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(4),
-                  backgroundColor: widget.backgroundColor.withAlpha(
-                    (widget.backgroundColor.a * 0.3).toInt(),
-                  ),
-                  valueColor: AlwaysStoppedAnimation(
-                    isComplete ? Colors.green : widget.progressColor,
-                  ),
-                ),*/
 
                 const SizedBox(height: 16.0),
 

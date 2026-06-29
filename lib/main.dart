@@ -43,8 +43,22 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Video Encoder',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        )
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        )
+      ),
       home: SafeArea(child: const HomeTabScreen()),
+      themeMode: ThemeMode.system, 
       builder: (context, child) {
         return DropTarget(
           onDragEntered: (details) => print('DEBUG: file entered the window!'),

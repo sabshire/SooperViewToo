@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
-import 'package:open_file_manager/open_file_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sooperview/PermissionHandler.dart';
-import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 

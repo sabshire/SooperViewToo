@@ -1,4 +1,4 @@
-import 'dart:io' show Directory, File, Platform;
+import 'dart:io' show Directory, Platform;
 
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -295,7 +295,7 @@ class FfmpegArgumentBuilder {
     String xmapPath,
     String ymapPath,
   ) =>
-    '-i "${filePath}" '
+    '-i "$filePath" '
     '-vf "movie=${wrapFilterPath(xmapPath)}[x]; '
     "movie=${wrapFilterPath(ymapPath)}[y]; "
     '[in][x][y]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)}" ';

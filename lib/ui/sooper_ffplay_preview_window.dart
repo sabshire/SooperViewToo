@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
-import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/file_manager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/remap_file_generator.dart';
 
 class SooperViewPreviewer extends StatefulWidget {
   const SooperViewPreviewer({
-    Key? key,
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   State<SooperViewPreviewer> createState() => _SooperViewPreviewerState();
@@ -16,9 +16,9 @@ class SooperViewPreviewer extends StatefulWidget {
 class _SooperViewPreviewerState extends State<SooperViewPreviewer> {
   FFplaySession? _playSession;
   FFplaySurface? _surface;
-  Size _videoSize = const Size(16, 9); // Fallback aspect ratio
-  int _videoWidth = 0;
-  int _videoHeight = 0;
+  final Size _videoSize = const Size(16, 9); // Fallback aspect ratio
+  //int _videoWidth = 0;
+  //int _videoHeight = 0;
   bool _isInitialized = false;
 
   @override
@@ -41,10 +41,8 @@ class _SooperViewPreviewerState extends State<SooperViewPreviewer> {
   Future<void> _initializeFFplay() async {
     try {
       String filePath = FileManager.GetCurrentSelectedFile()!.path;
-      await FFprobeKit.getMediaInformationAsync("'${filePath}'", onComplete: (session) async {
-        print(session.command);
+      await FFprobeKit.getMediaInformationAsync("'$filePath'", onComplete: (session) async {
         final result = session.getLogsAsString();
-        print(result);
 
         final jsonRegex = RegExp(r'\{[\s\S]*\}');
         final match = jsonRegex.stringMatch(result!);
@@ -52,7 +50,6 @@ class _SooperViewPreviewerState extends State<SooperViewPreviewer> {
           throw const FormatException("No valid JSON block found in output string.");
         }
         final metadata = VideoProperties.fromFfprobeJson(match);
-        print("${metadata.width}x${metadata.height} | ${metadata.duration}");
         var mapLoc = await RemapFileGenerator().generateCrossPlatformRemapFiles(metadata);
 
         
@@ -76,8 +73,8 @@ class _SooperViewPreviewerState extends State<SooperViewPreviewer> {
           final (w, h) = size;
           if (mounted && w > 0 && h > 0) {
             setState(() {
-              _videoWidth = w;
-              _videoHeight = h;
+              //_videoWidth = w;
+              //_videoHeight = h;
               //_hasVideo = true;
             });
             }

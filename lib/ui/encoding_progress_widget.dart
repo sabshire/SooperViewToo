@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/file_manager.dart';
 
-import '../FFmpegManager.dart';
+import '../ffmpeg_manager.dart';
 
 /// A beautiful, mobile-friendly encoding progress widget
 /// Displays a circular progress ring with percentage and status info

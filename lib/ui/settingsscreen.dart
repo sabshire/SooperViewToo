@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sooperview/FFmpegManager.dart';
-import 'package:sooperview/SaveManager.dart';
+import 'package:sooperview/ffmpeg_manager.dart';
+import 'package:sooperview/save_manager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/ui/sooper_dropdown.dart';
 import 'package:sooperview/ui/sooper_labelwidget.dart';
@@ -154,7 +154,7 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                            await SaveManager.LoadDefaultSettings();
+                            await SaveManager.loadDefaultSettings();
                             setState(() {
                               // Load Default Settings done
                             });
@@ -167,7 +167,7 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                            await SaveManager.SaveSettings();
+                            await SaveManager.saveSettings();
                             setState(() {
                               // Save New Settings done
                             });

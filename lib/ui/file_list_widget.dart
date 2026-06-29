@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/file_manager.dart';
 
 class FileListWidget extends StatefulWidget {
   final List<File> fileList;

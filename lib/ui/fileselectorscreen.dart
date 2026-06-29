@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:sooperview/FFmpegManager.dart';
-import 'package:sooperview/FileManager.dart';
-import 'package:sooperview/ui/FileListWidget.dart';
-import 'package:sooperview/ui/sooper_EncoderButton.dart';
+import 'package:sooperview/ffmpeg_manager.dart';
+import 'package:sooperview/file_manager.dart';
+import 'package:sooperview/ui/file_list_widget.dart';
+import 'package:sooperview/ui/sooper_encoder_button.dart';
 
 class FileSelectorScreen extends StatefulWidget {
   const FileSelectorScreen({super.key});

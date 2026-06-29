@@ -1,9 +1,9 @@
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/file_manager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 import 'package:sooperview/remap_file_generator.dart';
-import 'package:sooperview/FFmpegManager.dart';
+import 'package:sooperview/ffmpeg_manager.dart';
 
 import 'package:sooperview/PermissionHandler.dart';
 
@@ -38,9 +38,7 @@ class SooperEncoderButton extends StatelessWidget {
     onPressed?.call();
     FFmpegManager.ffprobeSession = await FFprobeKit.getMediaInformationAsync("'${FileManager.GetCurrentSelectedFile()?.path}'", onComplete: (session) async {
       FFmpegManager.encoderStatus.value = SooperEncoderStatus.encode;
-      print(session.command);
       final result = session.getLogsAsString();
-      print(result);
 
       final jsonRegex = RegExp(r'\{[\s\S]*\}');
       final match = jsonRegex.stringMatch(result!);
@@ -48,10 +46,8 @@ class SooperEncoderButton extends StatelessWidget {
         throw const FormatException("No valid JSON block found in output string.");
       }
       final metadata = VideoProperties.fromFfprobeJson(match);
-      print("${metadata.width}x${metadata.height} | ${metadata.duration}");
       var mapLoc = await RemapFileGenerator().generateCrossPlatformRemapFiles(metadata);
       final command = await FfmpegArgumentBuilder.BuildFFmpegArguments(FileManager.GetCurrentSelectedFile()!.path, mapLoc["xmap"]!, mapLoc["ymap"]!);
-      print(command);
 
       
       FFmpegManager.SetSession(FFmpegKit.createSession(command), metadata.totalFrames);
@@ -77,7 +73,6 @@ class SooperEncoderButton extends StatelessWidget {
           FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
         }  else {
           onFailure?.call();
-          print(session.getLogsAsString());
         }
 
         if (FileManager.NextSelectedFileExists()) {

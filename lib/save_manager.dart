@@ -1,10 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sooperview/FileManager.dart';
+import 'package:sooperview/file_manager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
 
 class SaveManager {
 
-  static Future<void> LoadSettings() async {
+  static Future<void> loadSettings() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (prefs.containsKey("Encoder")) {
@@ -43,7 +43,7 @@ class SaveManager {
     }    
   }
 
-  static Future<void> SaveSettings() async {
+  static Future<void> saveSettings() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString("Encoder", FfmpegArgumentBuilder.selectedEncoder);
@@ -54,18 +54,16 @@ class SaveManager {
     prefs.setString("Preset", FfmpegArgumentBuilder.GetCurrentPresetValue());
   }
 
-  static Future<void> LoadDefaultSettings() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
+  static Future<void> loadDefaultSettings() async {
     FfmpegArgumentBuilder.selectedEncoder = "H264";
     FfmpegArgumentBuilder.selectedHardware = "CPU";
     FfmpegArgumentBuilder.selectedColorspace = "8-bit";
     FfmpegArgumentBuilder.selectedResolution = "4K";
-    SetDefaultCRFValues();
-    SetDefaultPresetValues();
+    setDefaultCRFValues();
+    setDefaultPresetValues();
   }
 
-  static void SetDefaultPresetValues() {
+  static void setDefaultPresetValues() {
     FfmpegArgumentBuilder.nvidiaPresetValue = "p4";
     FfmpegArgumentBuilder.amdPresetValue = "balance";
     FfmpegArgumentBuilder.intelPresetValue = "medium";
@@ -74,7 +72,7 @@ class SaveManager {
     FfmpegArgumentBuilder.selectedAndroidBitrateMode = "cq";
   }
 
-  static void SetDefaultCRFValues() {
+  static void setDefaultCRFValues() {
     FfmpegArgumentBuilder.crfValue = 18;
     FfmpegArgumentBuilder.crfAndroidValue = 80;
   }

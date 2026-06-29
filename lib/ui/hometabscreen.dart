@@ -1,8 +1,8 @@
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:sooperview/FFmpegManager.dart';
-import 'package:sooperview/FileManager.dart';
-import 'package:sooperview/ui/EncodingProgressWidget.dart';
+import 'package:sooperview/ffmpeg_manager.dart';
+import 'package:sooperview/file_manager.dart';
+import 'package:sooperview/ui/encoding_progress_widget.dart';
 import 'package:sooperview/ui/fileselectorscreen.dart';
 import 'package:sooperview/ui/settingsscreen.dart';
 

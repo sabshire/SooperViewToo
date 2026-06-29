@@ -313,7 +313,7 @@ class FfmpegArgumentBuilder {
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, "sooperview-temp.$videoFormat");
     String fileTag = ""; // For HEVC file tag to fix mac quicktime problems
-    if (selectedEncoder == "HEVC") { fileTag = " -tag:v hvc1"; } // TODO: Make this into a setting!
+    if (selectedEncoder == "HEVC" && Platform.isMacOS) { fileTag = " -tag:v hvc1"; } // TODO: Make this into a setting!
     return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${GetCRFArgument()} ${GetPresetArgument()} ${GetPixelFormat()}$fileTag ${path}";
   }
 

@@ -57,10 +57,10 @@ class _FileListWidgetState extends State<FileListWidget> {
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.cloud_upload, size: 48, color: Colors.grey),
                       SizedBox(height: 8),
-                      Text('Drag Files Here'),
+                      Text((!Platform.isAndroid && !Platform.isIOS) ? 'Drag Files Here' : 'No Files Added'),
                     ],
                   ),
                 )

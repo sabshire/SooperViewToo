@@ -52,6 +52,11 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                             onStateChanged: (hardwareValue) {
                               setState(() {
                                 FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
+                                
+                                if (!FfmpegArgumentBuilder.getAvailableEncoders().contains(FfmpegArgumentBuilder.selectedEncoder)) {
+                                  // Doesn't contain current selected encoder. Defaulting to first in available encoders list
+                                  FfmpegArgumentBuilder.selectedEncoder = FfmpegArgumentBuilder.getAvailableEncoders()[0];
+                                }
                               });
                             },
                           ),
@@ -62,10 +67,10 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                           label: "Encoder",
                           child: SooperDropdown(
                             dropdownValue: FfmpegArgumentBuilder.selectedEncoder, 
-                            dropdownValueList: FfmpegArgumentBuilder.encoderItems,
+                            dropdownValueList: FfmpegArgumentBuilder.getAvailableEncoders(),
                             onStateChanged: (encoderValue) {
                               setState(() {
-                                FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.encoderItems[0];
+                                FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.getAvailableEncoders()[0];
                               });
                             },
                           ),

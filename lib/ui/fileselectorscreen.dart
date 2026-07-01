@@ -17,7 +17,10 @@ class FileSelectorScreen extends StatefulWidget {
 class FileSelectorScreenState extends State<FileSelectorScreen> {
 
   Future<void> pickFile() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.video, allowMultiple: true);
+    FilePickerResult? result;
+    if (Platform.isIOS) { result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: true); }
+    else { result = await FilePicker.platform.pickFiles(type: FileType.video, allowMultiple: true); }
+    
     if (result != null && result.files.isNotEmpty) {
       //final filePath = result.files.single.path;
       List<File> files = [];

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sooperview/file_manager.dart';
 import '../ffmpeg_manager.dart';
@@ -158,68 +157,34 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                               else
                                 ...[
                                   //keep box inside of progress circle
-                                  ConstrainedBox(                                    
-                                    constraints: BoxConstraints(
-                                      maxWidth: widget.size /1.5 / sqrt(2),
-                                      maxHeight: widget.size /1.5 / sqrt(2),
-                                    ),
-                                    child:
-                                      Column(                                    
-                                        spacing: 2,
-                                        children: [
-                                          Text(
-                                            '$percentage%',
-                                            style: TextStyle(
-                                              fontSize: 36,
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineMedium
-                                                  ?.color,
-                                            ),
+                                    Column(                                    
+                                      spacing: 2,
+                                      children: [
+                                        Text(
+                                          '$percentage%',
+                                          style: TextStyle(
+                                            fontSize: 36,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium
+                                                ?.color,
                                           ),
+                                        ),
 
-                                          Text(
-                                            '${FileManager.currentFile + 1} / ${FileManager.selectedFileList.length}',
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.color,
-                                            ),
+                                        Text(
+                                          '${FileManager.currentFile + 1} / ${FileManager.selectedFileList.length}',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.color,
                                           ),
-                                          Text(
-                                            '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}:',
-                                            textAlign: TextAlign.center,                                       
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.color,
-                                            ),
-                                          ),
-                                          Text(
-                                            FileManager.getFileName(FileManager.selectedFileList[FileManager.currentFile].path),
-                                            softWrap: true,   
-                                            overflow: TextOverflow.ellipsis,
-                                            textAlign: TextAlign.center,                                       
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontStyle: FontStyle.italic,
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.color,
-                                            ),
-                                          ),
-                                        ]
-                                      )
-                                  )
+                                        ),
+                                      ]
+                                    )
                                 ],
                             ],
                           ),
@@ -227,6 +192,47 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                       ),
                     );
                   },
+                ),
+
+
+                ConstrainedBox(                                    
+                  constraints: BoxConstraints(
+                    maxWidth: widget.size,
+                  ),
+                  child:
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      runSpacing: 4,
+                      spacing: 5,
+                      children: [
+                        Text(
+                          '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}:',
+                          textAlign: TextAlign.center,                                       
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.color,
+                          ),
+                        ),
+                        Text(
+                          FileManager.getFileName(FileManager.selectedFileList[FileManager.currentFile].path),
+                          textAlign: TextAlign.center,                                       
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.color,
+                          ),
+                        ),
+
+                      ],
+                    ),
                 ),
 
                 // Cancel / Exit button
@@ -245,7 +251,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
         FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish;
 
     return SizedBox(
-      width: double.infinity,
+      width: widget.size,
       child: ElevatedButton.icon(
         onPressed: isFinished ? widget.onExitWidget : widget.onCancelEncode,
         icon: Icon(

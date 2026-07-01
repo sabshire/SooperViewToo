@@ -208,7 +208,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                     ),
                                   ),
                                   Text(
-                                    '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}',
+                                    '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}: ${FileManager.getFileName(FileManager.selectedFileList[FileManager.currentFile].path)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,

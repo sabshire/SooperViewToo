@@ -7,11 +7,15 @@ List of bugs and TODOs that need fixed
 
 - Making HVC1 tagging on MacOS devices a setting? (Not important)
 
-- Add current video being encoded file name to progress page
+- Modify line 211 in encoding_progress_widget.dart. The Text object when encoding goes past the circle when displaying current encoding file name. Probably move this to under the circle or above.
 
-- Hide AV1 encoder on MacOS and iPhone, Apple does not current support AV1 encoding on MacOS and iPhone, only decoding
+- Some of encoding_progress_widget.dart ui code isn't even being used. Behind if statements that always turn null is widget.speedText, widget.timeRemaining, etc.
 
-- Convert FfmpegArgumentBuilder.encoderItems to a Map with a String as the key and List<string> as value. Use this to get available encoders for each hardware type. This will allow hiding specific encoders on hardware.
+=================== LOW PRIORITY TODO (After Release) ==========================
+
+- Modify logic to run probes first, this could be used to get frame count for all files at start and use this with frames being rendered per second to estimate encoding time left across all files in total. This would require rewriting a decent chunk of code.
+
+- Save xmap/ymap files for each resolution type instead of for each video. This could limit overwriting files which are the same resolution and don't need to be rewritten. Since most people only probably record in a small amount of resolutions/aspect ratios.
 
 =================== PREVIEW WINDOW TODOS =========================
 

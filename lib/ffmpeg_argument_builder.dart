@@ -10,12 +10,26 @@ class FfmpegArgumentBuilder {
   static String outputPath = "";
 
   static String selectedEncoder = "H264";
-  static final List<String> encoderItems = ["H264", "HEVC", "AV1"]; // TODO: Remove this for another dictionary (Map) to get available encoders for specific hardware
+  //static final List<String> encoderItems = ["H264", "HEVC", "AV1"]; // This was swapped for availableEncoders Map. Delete when tested properly
 
   static String selectedHardware = "CPU";
 
   static String selectedResolution = "4K";
   static final List<String> resolutionItems = ["4K", "1440p", "1080p", "720p", "480p"];
+
+  static const Map<String, List<String>> availableEncoders = {
+    'CPU': ['H264', 'HEVC', 'AV1'],
+    'NVIDIA': ['H264', 'HEVC', 'AV1'],
+    'AMD': ['H264', 'HEVC', 'AV1'],
+    'INTEL': ['H264', 'HEVC', 'AV1'],
+    'Android': ['H264', 'HEVC'],
+    'MacOS': ['H264', 'HEVC'],
+    'iPhone': ['H264', 'HEVC'],
+  };
+
+  static List<String> getAvailableEncoders() {
+    return availableEncoders[selectedHardware]!;
+  }
 
   static const Map<(String hw, String encoder), String> encoderSettings = {
     // H264

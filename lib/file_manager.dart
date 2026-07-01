@@ -59,6 +59,10 @@ class FileManager {
     selectedFileCount.value--;
   }
 
+  static String getFileName(String filePath) {
+    return p.basename(filePath);
+  }
+
   static Future<void> moveExistingTempFile(String sourceFileStr, File selectedFile) async {
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, sourceFileStr);

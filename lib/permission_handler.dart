@@ -11,6 +11,11 @@ class PermissionHandler {
       return true;
     }
 
+    if (await Permission.storage.request().isGranted) {
+      // Either the permission was already granted before or the user just granted it.
+      return true;
+    }
+
     return false;
   }
 }

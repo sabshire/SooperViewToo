@@ -10,7 +10,7 @@ class FfmpegArgumentBuilder {
   static String outputPath = "";
 
   static String selectedEncoder = "H264";
-  static final List<String> encoderItems = ["H264", "HEVC", "AV1"];
+  static final List<String> encoderItems = ["H264", "HEVC", "AV1"]; // TODO: Remove this for another dictionary (Map) to get available encoders for specific hardware
 
   static String selectedHardware = "CPU";
 
@@ -24,6 +24,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'H264'): '-c:v h264_amf',
     ('INTEL', 'H264'): '-c:v h264_qsv',
     ('MacOS', 'H264'): '-c:v h264_videotoolbox',
+    ('iPhone', 'H264'): '-c:v hevc_videotoolbox',
     ('Android', 'H264'): '-c:v h264_mediacodec',
 
     // HEVC
@@ -32,6 +33,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'HEVC'): '-c:v hevc_amf',
     ('INTEL', 'HEVC'): '-c:v hevc_qsv',
     ('MacOS', 'HEVC'): '-c:v hevc_videotoolbox',
+    ('iPhone', 'HEVC'): '-c:v hevc_videotoolbox',
     ('Android', 'HEVC'): '-c:v hevc_mediacodec',
 
     // AV1
@@ -52,6 +54,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'H264'): ["quality", "balance", "speed"],
     ('INTEL', 'H264'): ["veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"],
     ('MacOS', 'H264'): [], // TODO
+    ('iPhone', 'H264'): [], // TODO
     ('Android', 'H264'): ["cq", "vbr", "cbr", "cbr_fd"],
 
     // HEVC
@@ -60,6 +63,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'HEVC'): ["quality", "balance", "speed"],
     ('INTEL', 'HEVC'): ["veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"],
     ('MacOS', 'HEVC'): [], // TODO
+    ('iPhone', 'HEVC'): [], // TODO
     ('Android', 'HEVC'): ["cq", "vbr", "cbr", "cbr_fd"],
 
     // AV1
@@ -68,6 +72,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'AV1'): ["quality", "balance", "speed"],
     ('INTEL', 'AV1'): ["veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"],
     ('MacOS', 'AV1'): [], // TODO
+    ('iPhone', 'AV1'): [], // TODO
     //('Android', 'AV1'): [],
     
   };
@@ -174,7 +179,15 @@ class FfmpegArgumentBuilder {
       return ["CPU", "MacOS"];
     }
 
-    return ["CPU", "NVIDIA", "AMD", "INTEL", "Android", "MacOS"];
+    if (Platform.isIOS) {
+      return ["CPU", "iPhone"];
+    }
+
+    if (Platform.isWindows) {
+      return ["CPU", "NVIDIA", "AMD", "INTEL"];
+    }
+
+    return ["CPU", "NVIDIA", "AMD", "INTEL", "Android"];
   }
 
   static int crfValue = 18;

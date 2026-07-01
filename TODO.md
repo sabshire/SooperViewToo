@@ -9,8 +9,6 @@ List of bugs and TODOs that need fixed
 
 - Modify line 211 in encoding_progress_widget.dart. The Text object when encoding goes past the circle when displaying current encoding file name. Probably move this to under the circle or above.
 
-- Some of encoding_progress_widget.dart ui code isn't even being used. Behind if statements that always turn null is widget.speedText, widget.timeRemaining, etc.
-
 =================== LOW PRIORITY TODO (After Release) ==========================
 
 - Modify logic to run probes first, this could be used to get frame count for all files at start and use this with frames being rendered per second to estimate encoding time left across all files in total. This would require rewriting a decent chunk of code.

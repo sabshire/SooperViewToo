@@ -1,6 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sooperview/file_manager.dart';
-
 import '../ffmpeg_manager.dart';
 
 /// A beautiful, mobile-friendly encoding progress widget
@@ -8,18 +8,6 @@ import '../ffmpeg_manager.dart';
 class EncodingProgressWidget extends StatefulWidget {
   /// Progress value between 0.0 and 1.0
   final double progress;
-
-  /// Optional title text displayed above the progress ring
-  final String? title;
-
-  /// Optional status text displayed below the progress info
-  final String? statusText;
-
-  /// Optional speed info text (e.g., "2.5x real-time")
-  final String? speedText;
-
-  /// Optional time remaining text (e.g., "3:45 remaining")
-  final String? timeRemaining;
 
   /// Color for the progress ring
   final Color progressColor;
@@ -42,10 +30,6 @@ class EncodingProgressWidget extends StatefulWidget {
   const EncodingProgressWidget({
     super.key,
     required this.progress,
-    this.title,
-    this.statusText,
-    this.speedText,
-    this.timeRemaining,
     this.progressColor = Colors.blue,
     this.backgroundColor = Colors.blueGrey,
     this.strokeWidth = 12.0,
@@ -121,18 +105,6 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title
-                if (widget.title != null)
-                  Text(
-                    widget.title!,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isComplete ? Colors.green : null,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                if (widget.title != null) const SizedBox(height: 24.0),
-
                 // Progress Ring
                 AnimatedBuilder(
                   animation: _animationController,
@@ -185,39 +157,69 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                 )
                               else
                                 ...[
-                                  Text(
-                                    '$percentage%',
-                                    style: TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium
-                                          ?.color,
+                                  //keep box inside of progress circle
+                                  ConstrainedBox(                                    
+                                    constraints: BoxConstraints(
+                                      maxWidth: widget.size /1.5 / sqrt(2),
+                                      maxHeight: widget.size /1.5 / sqrt(2),
                                     ),
-                                  ),
-                                  Text(
-                                    '${FileManager.currentFile + 1}/${FileManager.selectedFileList.length}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.color,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}: ${FileManager.getFileName(FileManager.selectedFileList[FileManager.currentFile].path)}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.color,
-                                    ),
-                                  ),
+                                    child:
+                                      Column(                                    
+                                        spacing: 2,
+                                        children: [
+                                          Text(
+                                            '$percentage%',
+                                            style: TextStyle(
+                                              fontSize: 36,
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineMedium
+                                                  ?.color,
+                                            ),
+                                          ),
+
+                                          Text(
+                                            '${FileManager.currentFile + 1} / ${FileManager.selectedFileList.length}',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${FFmpegManager.getStatusToText(FFmpegManager.encoderStatus.value)}:',
+                                            textAlign: TextAlign.center,                                       
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                          ),
+                                          Text(
+                                            FileManager.getFileName(FileManager.selectedFileList[FileManager.currentFile].path),
+                                            softWrap: true,   
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,                                       
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontStyle: FontStyle.italic,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                          ),
+                                        ]
+                                      )
+                                  )
                                 ],
                             ],
                           ),
@@ -226,38 +228,6 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                     );
                   },
                 ),
-
-                const SizedBox(height: 16.0),
-
-                // Info row with speed and time remaining
-                if (widget.speedText != null || widget.timeRemaining != null)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (widget.speedText != null)
-                        _buildInfoChip(
-                          icon: Icons.speed,
-                          label: widget.speedText!,
-                        ),
-                      if (widget.timeRemaining != null)
-                        _buildInfoChip(
-                          icon: Icons.timer,
-                          label: widget.timeRemaining!,
-                        ),
-                    ],
-                  ),
-
-                // Status text
-                if (widget.statusText != null) ...[
-                  const SizedBox(height: 16.0),
-                  Text(
-                    widget.statusText!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
 
                 // Cancel / Exit button
                 const SizedBox(height: 24.0),
@@ -297,35 +267,6 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoChip({required IconData icon, required String label}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: widget.progressColor.withAlpha(26),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 16,
-            color: widget.progressColor,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: widget.progressColor,
-            ),
-          ),
-        ],
       ),
     );
   }

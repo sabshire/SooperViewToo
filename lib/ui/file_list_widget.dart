@@ -94,8 +94,10 @@ class _FileListWidgetState extends State<FileListWidget> {
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           // Keep mutations inside the static manager; it handles the notification
+                          FileManager.RemoveFromSelectedFiles(file);
                           FileManager.RemoveFile(file); 
                           widget.onRemove(file); 
+                          widget.onSelectionUpdate?.call();
                         },
                       ),
                       onTap: () => _toggleSelection(file),

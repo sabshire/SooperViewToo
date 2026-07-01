@@ -67,9 +67,10 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
             icon: const Icon(Icons.folder),
             label: const Text('Set Output Folder'),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
             spacing: 10,
+            runSpacing: 4,
             children: [
               Text(
                 "Current:",
@@ -78,7 +79,7 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
                 )
               ),
               Text(
-                FileManager.outputPath ?? "Not Set",
+                FileManager.outputPath ?? "Not Set",                
                 style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontStyle: FontStyle.italic

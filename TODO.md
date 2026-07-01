@@ -2,6 +2,7 @@ List of bugs and TODOs that need fixed
 
 ============= BUGS =============
 
+- Check permission call needs to happen earlier.  Crashing encode
 
 ============= TODOs =============
 

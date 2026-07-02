@@ -16,6 +16,16 @@ class FileManager {
 
   static String? outputPath;
 
+  static bool isOutputPathSet() {
+    if (outputPath != null) {
+      if(outputPath!.isEmpty) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   static void AddFile(List<File> files) {
     fileList.addAll(files);
     fileCount.value++;

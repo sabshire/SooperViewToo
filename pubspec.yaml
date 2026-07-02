@@ -1,7 +1,7 @@
 name: sooperview
-description: "A new Flutter project."
+description: "Converts 4:3 videos to 16:9"
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.3.0
 
 environment:
   sdk: ^3.12.1
@@ -17,7 +17,11 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.8.3
   file_picker: 10.3.8
-  open_file_manager: ^2.0.1
+  #open_file_manager: ^2.0.1
+  permission_handler: ^12.0.3
+  shared_preferences: ^2.5.5
+  desktop_drop: ^0.7.1
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -26,8 +30,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
 
 ffmpeg_kit_extended_config:
-  type: "full" # pre-bundled builds: debug, base, full, audio, video, video_hw
+  type: "video_hw" # pre-bundled builds: debug, base, full, audio, video, video_hw
   gpl: true # enable to include GPL libraries
   small: true # enable to use smaller builds

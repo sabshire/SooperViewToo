@@ -1,11 +1,36 @@
-import 'dart:io' show Platform, Directory;
+import 'dart:io' show Directory, Platform;
 
-import 'package:sooperview/main.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 /// Builder class for constructing ffmpeg/ffprobe command-line arguments.
 class FfmpegArgumentBuilder {
+  
+  //static File? selectedFile;
+  static String outputPath = "";
+
+  static String selectedEncoder = "H264";
+  //static final List<String> encoderItems = ["H264", "HEVC", "AV1"]; // This was swapped for availableEncoders Map. Delete when tested properly
+
+  static String selectedHardware = "CPU";
+
+  static String selectedResolution = "4K";
+  static final List<String> resolutionItems = ["4K", "1440p", "1080p", "720p", "480p"];
+
+  static const Map<String, List<String>> availableEncoders = {
+    'CPU': ['H264', 'HEVC', 'AV1'],
+    'NVIDIA': ['H264', 'HEVC', 'AV1'],
+    'AMD': ['H264', 'HEVC', 'AV1'],
+    'INTEL': ['H264', 'HEVC', 'AV1'],
+    'Android': ['H264', 'HEVC'],
+    'MacOS': ['H264', 'HEVC'],
+    'iPhone': ['H264', 'HEVC'],
+  };
+
+  static List<String> getAvailableEncoders() {
+    return availableEncoders[selectedHardware]!;
+  }
+
   static const Map<(String hw, String encoder), String> encoderSettings = {
     // H264
     ('CPU', 'H264'): '-c:v libx264',
@@ -13,6 +38,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'H264'): '-c:v h264_amf',
     ('INTEL', 'H264'): '-c:v h264_qsv',
     ('MacOS', 'H264'): '-c:v h264_videotoolbox',
+    ('iPhone', 'H264'): '-c:v h264_videotoolbox',
     ('Android', 'H264'): '-c:v h264_mediacodec',
 
     // HEVC
@@ -21,6 +47,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'HEVC'): '-c:v hevc_amf',
     ('INTEL', 'HEVC'): '-c:v hevc_qsv',
     ('MacOS', 'HEVC'): '-c:v hevc_videotoolbox',
+    ('iPhone', 'HEVC'): '-c:v hevc_videotoolbox',
     ('Android', 'HEVC'): '-c:v hevc_mediacodec',
 
     // AV1
@@ -28,7 +55,7 @@ class FfmpegArgumentBuilder {
     ('NVIDIA', 'AV1'): '-c:v av1_nvenc',
     ('AMD', 'AV1'): '-c:v av1_amf',
     ('INTEL', 'AV1'): '-c:v av1_qsv',
-    ('MacOS', 'AV1'): '-c:v av1_videotoolbox',
+    //('MacOS', 'AV1'): '-c:v av1_videotoolbox', // Doesn't seem to work (maybe different encoder name?)
     //('Android', 'AV1'): '-c:v av1_mediacodec',
     
   };
@@ -41,6 +68,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'H264'): ["quality", "balance", "speed"],
     ('INTEL', 'H264'): ["veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"],
     ('MacOS', 'H264'): [], // TODO
+    ('iPhone', 'H264'): [], // TODO
     ('Android', 'H264'): ["cq", "vbr", "cbr", "cbr_fd"],
 
     // HEVC
@@ -49,6 +77,7 @@ class FfmpegArgumentBuilder {
     ('AMD', 'HEVC'): ["quality", "balance", "speed"],
     ('INTEL', 'HEVC'): ["veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"],
     ('MacOS', 'HEVC'): [], // TODO
+    ('iPhone', 'HEVC'): [], // TODO
     ('Android', 'HEVC'): ["cq", "vbr", "cbr", "cbr_fd"],
 
     // AV1
@@ -57,9 +86,14 @@ class FfmpegArgumentBuilder {
     ('AMD', 'AV1'): ["quality", "balance", "speed"],
     ('INTEL', 'AV1'): ["veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"],
     ('MacOS', 'AV1'): [], // TODO
+    ('iPhone', 'AV1'): [], // TODO
     //('Android', 'AV1'): [],
     
   };
+
+  static List<String>? GetCurrentPresetList() {
+    return presetValues[(selectedHardware, selectedEncoder)];
+  }
 
   static String nvidiaPresetValue = "p4";
   static String amdPresetValue = "balance";
@@ -68,8 +102,8 @@ class FfmpegArgumentBuilder {
   static String cpuAV1Value = "6";
   static String selectedAndroidBitrateMode = "cq";
 
-  static String GetCurrentPresetValue(String hw, String encoderType) {
-    switch (hw) {
+  static String GetCurrentPresetValue() {
+    switch (selectedHardware) {
       case "NVIDIA":
         return nvidiaPresetValue;
 
@@ -83,8 +117,8 @@ class FfmpegArgumentBuilder {
         return selectedAndroidBitrateMode;
     }
 
-    if (hw == "CPU") { // SHOULD BE CPU
-      if (encoderType == "AV1") {
+    if (selectedHardware == "CPU") { // SHOULD BE CPU
+      if (selectedEncoder == "AV1") {
         return cpuAV1Value; // AV1
       } else {
         return cpuH26XValue; // H264/HEVC
@@ -94,8 +128,8 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static void SetCurrentPresetValue(String hw, String encoderType, String value) {
-    switch (hw) {
+  static void SetCurrentPresetValue(String value) {
+    switch (selectedHardware) {
       case "NVIDIA":
         nvidiaPresetValue = value;
         return;
@@ -113,8 +147,8 @@ class FfmpegArgumentBuilder {
         return;
     }
 
-    if (hw == "CPU") { // SHOULD BE CPU
-      if (encoderType == "AV1") {
+    if (selectedHardware == "CPU") { // SHOULD BE CPU
+      if (selectedEncoder == "AV1") {
         cpuAV1Value = value; // AV1
         return;
       } else {
@@ -124,8 +158,8 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static String GetPresetArgument(String hw, String encoderType) {
-    switch (hw) {
+  static String GetPresetArgument() {
+    switch (selectedHardware) {
       case "NVIDIA":
         return "-preset $nvidiaPresetValue";
 
@@ -139,8 +173,8 @@ class FfmpegArgumentBuilder {
         //return "-bitrate-mode $selectedAndroidBitrateMode"; // Doesn't seem to work
     }
 
-    if (hw == "CPU") { // SHOULD BE CPU
-      if (encoderType == "AV1") {
+    if (selectedHardware == "CPU") { // SHOULD BE CPU
+      if (selectedEncoder == "AV1") {
         return "-preset $cpuAV1Value";
       } else {
         return "-preset $cpuH26XValue";
@@ -159,13 +193,21 @@ class FfmpegArgumentBuilder {
       return ["CPU", "MacOS"];
     }
 
-    return ["CPU", "NVIDIA", "AMD", "INTEL", "Android", "MacOS"];
+    if (Platform.isIOS) {
+      return ["CPU", "iPhone"];
+    }
+
+    if (Platform.isWindows) {
+      return ["CPU", "NVIDIA", "AMD", "INTEL"];
+    }
+
+    return ["CPU", "NVIDIA", "AMD", "INTEL", "Android"];
   }
 
   static int crfValue = 18;
   static int crfAndroidValue = 80;
-  static String GetCRFArgument(String hw) {
-    switch(hw) {
+  static String GetCRFArgument() {
+    switch(selectedHardware) {
       case "NVIDIA":
         return "-rc constqp -cq:v $crfValue -b:v 0"; // Not sure if -b:v is needed
 
@@ -184,23 +226,23 @@ class FfmpegArgumentBuilder {
     }
   }
   
-  static List<int> GetCRFValueList(String hw) {
-    if (hw == "Android") {
+  static List<int> GetCRFValueList() {
+    if (selectedHardware == "Android") {
       return List.generate(101, (index) => index);
     } else {
       return List.generate(52, (index) => index);
     }
   }
 
-  static int GetCRFValue(String hw) {
-    if (hw == "Android") {
+  static int GetCRFValue() {
+    if (selectedHardware == "Android") {
       return crfAndroidValue;
     } else {
       return crfValue;
     }
   }
-  static void SetCRFValue(String hw, int crf) {
-    if (hw == "Android") {
+  static void SetCRFValue(int crf) {
+    if (selectedHardware == "Android") {
       crfAndroidValue = crf;
       return;
     } else {
@@ -208,8 +250,11 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static String GetPixelFormat(String colorSpace) {
-    switch(colorSpace) {
+  static String selectedColorspace = "8-bit";
+  static final List<String> colorspaceItems = ["8-bit", "10-bit"];
+
+  static String GetPixelFormat() {
+    switch(selectedColorspace) {
       case "10-bit":
         return "-pix_fmt yuv420p10le";
 
@@ -233,6 +278,9 @@ class FfmpegArgumentBuilder {
       case "4K":
         return "2160";
 
+      case "480p":
+        return "480";
+
       default:
         return "1080"; // Default just in case
     }
@@ -252,18 +300,49 @@ class FfmpegArgumentBuilder {
       case "4K":
         return "3840";
 
+      case "480p":
+        return "720";
+
       default:
         return "1920"; // Default just in case
     }
   }
 
+  static String videoFormat = "mp4";
+  static List<String> videoFormatList = ["mp4", "mov", "mkv", "webm", "avi"];
+  // -v error -hide_banner -print_format json -show_format -show_streams -show_chapters -i 'C:\Users\Stacey Abshire\Videos\djio3\2026\04\18\DJI_0118.MP4'
   static String buildFfprobeArguments(String filePath) =>
-      '-i "$filePath" -show_entries stream=width,height,duration -of json';
+    "-i ${wrapPathInQuotes(filePath)} -show_entries stream=width,height,duration -of json";
 
-  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath, String resolution, String hardware, String encoderType, String colorspace) async { // TODO Move some of these variables to this class
-    final Directory tempDir = await getTemporaryDirectory();
-    final path = p.join(tempDir.path, "sooperview-temp.mp4");
+//  static String buildFFPlayArguments(String filePath, String xmapPath, String ymapPath) =>
+//    '-i ${wrapPathInQuotes(filePath)} -vf "movie=${wrapPathInQuotes(xmapPath)}[x]; movie=${wrapPathInQuotes(ymapPath)}[y]; [in][x][y]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)}"';
 
-    return "-y -i $sourceFile -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(resolution)}:${GetHeight(resolution)} ${encoderSettings[(hardware, encoderType)]} ${GetCRFArgument(hardware)} ${GetPresetArgument(hardware, encoderType)} ${GetPixelFormat(colorspace)} ${path}";
+  static String buildFFPlayArgumentsNew(
+    String filePath,
+    String xmapPath,
+    String ymapPath,
+  ) =>
+    '-i "$filePath" '
+    '-vf "movie=${wrapFilterPath(xmapPath)}[x]; '
+    "movie=${wrapFilterPath(ymapPath)}[y]; "
+    '[in][x][y]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)}" ';
+
+  static String escapeFilterPath(String path) {
+  return path
+      .replaceAll(r'\', r'\\')
+      .replaceAll(':', r'\:');
   }
+
+  static String wrapFilterPath(String path) =>
+    "'${escapeFilterPath(path)}'";
+
+  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final path = p.join(tempDir.path, "sooperview-temp.$videoFormat");
+    String fileTag = ""; // For HEVC file tag to fix mac quicktime problems
+    if (selectedEncoder == "HEVC" && (Platform.isMacOS || Platform.isIOS)) { fileTag = " -tag:v hvc1"; } // TODO: Make this into a setting!
+    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${GetCRFArgument()} ${GetPresetArgument()} ${GetPixelFormat()}$fileTag ${path}";
+  }
+
+  static String wrapPathInQuotes(String path) => "'$path'";
 }

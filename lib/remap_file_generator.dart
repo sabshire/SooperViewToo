@@ -10,11 +10,13 @@ class VideoProperties {
   final int width;
   final int height;
   final double duration;
+  final int totalFrames;
 
   VideoProperties({
     required this.width,
     required this.height,
-    required this.duration
+    required this.duration,
+    required this.totalFrames
   });
 
   /// Creates VideoProperties from a direct JSON object (e.g., from ffprobe output)
@@ -31,6 +33,7 @@ class VideoProperties {
       height: json['height'] as int,
       // Parse string duration securely into a double
       duration: double.tryParse(json['duration']?.toString() ?? '0.0') ?? 0.0,
+      totalFrames: json["nb_frames"] as int
     );
   }
 
@@ -55,20 +58,22 @@ class VideoProperties {
     int? width;
     int? height;
     double? duration;
+    int? totalFrames;
 
     if (streams != null) {
       for (final stream in streams) {
         final s = stream as Map<String, dynamic>;
-        if (s.containsKey('width') && s.containsKey('height')) {
+        if (s.containsKey('width') && s.containsKey('height') && s.containsKey('nb_frames')) {
           width = s['width'];
           height = s['height'];
           duration = double.tryParse(s['duration'].toString());
+          totalFrames = int.tryParse(s['nb_frames']);
           break;
         }
       }
     }
 
-    if (width == null || height == null || duration == null) {
+    if (width == null || height == null || duration == null || totalFrames == null) {
       throw FormatException(
         "No video stream with width and height found in ffprobe output.",
       );
@@ -77,7 +82,8 @@ class VideoProperties {
     return VideoProperties(
       width: width,
       height: height,
-      duration: duration!,
+      totalFrames: totalFrames,
+      duration: duration,
     );
   }
 }
@@ -107,12 +113,16 @@ class RemapFileGenerator {
   Future<Map<String, String>> generateCrossPlatformRemapFiles(VideoProperties vidProperties) async {
     // 1. Resolve safe local temporary workspace cache natively on iOS/Android/Desktop
     final Directory tempDir = await getTemporaryDirectory();
+    
+    // Ensure the directory exists (macOS sandbox may not create it automatically)
+    if (!await tempDir.exists()) {
+      await tempDir.create(recursive: true);
+    }
+    
     final String outputDirectory = tempDir.path;
 
     final xmapPath = p.join(outputDirectory, "temp_xmap.pgm");
     final ymapPath = p.join(outputDirectory, "temp_ymap.pgm");
-    //final xmapPath = '$outputDirectory/temp_xmap.pgm';
-    //final ymapPath = '$outputDirectory/temp_ymap.pgm';
     final targetWidth = (vidProperties.height * 16 / 9).toInt();
 
     // 2. Offload work to an isolated thread to prevent UI freezing
@@ -176,7 +186,9 @@ class RemapFileGenerator {
       }
       
     } catch (exception, stackTrace) {
-
+      print('ERROR: Failed to generate remap files: $exception');
+      print('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 

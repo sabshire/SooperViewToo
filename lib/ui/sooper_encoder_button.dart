@@ -99,7 +99,7 @@ class SooperEncoderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileList.isEmpty)) ? null : encode,
+      onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileList.isEmpty) || (!FileManager.isOutputPathSet())) ? null : encode,
       icon: const Icon(Icons.play_arrow, color: Colors.green,),
       label: const Text('Encode'),
     );

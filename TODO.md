@@ -2,13 +2,12 @@ List of bugs and TODOs that need fixed
 
 ============= BUGS =============
 
-- Check permission call needs to happen earlier.  Crashing encode
+
 
 ============= TODOs =============
 
 - Making HVC1 tagging on MacOS devices a setting? (Not important)
 
-- Modify line 211 in encoding_progress_widget.dart. The Text object when encoding goes past the circle when displaying current encoding file name. Probably move this to under the circle or above.
 
 =================== LOW PRIORITY TODO (After Release) ==========================
 

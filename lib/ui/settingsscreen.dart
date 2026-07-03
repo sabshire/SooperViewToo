@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sooperview/ffmpeg_manager.dart';
 import 'package:sooperview/save_manager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
@@ -44,21 +43,24 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
-                        child: SooperLabel(
-                          label: "Hardware",
-                          child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
-                            dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
-                            onStateChanged: (hardwareValue) {
-                              setState(() {
-                                FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
-                                
-                                if (!FfmpegArgumentBuilder.getAvailableEncoders().contains(FfmpegArgumentBuilder.selectedEncoder)) {
-                                  // Doesn't contain current selected encoder. Defaulting to first in available encoders list
-                                  FfmpegArgumentBuilder.selectedEncoder = FfmpegArgumentBuilder.getAvailableEncoders()[0];
-                                }
-                              });
-                            },
+                        child: Tooltip(
+                          message: "CPU or GPU (Nvidia, Intel, or AMD) encoding.\n\nCPU encoding is slower, but produces marginally better quality.\nGPU encoding is much faster.  Choose your brand of GPU",
+                          child:SooperLabel(
+                            label: "Hardware",
+                            child: SooperDropdown(
+                              dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
+                              dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
+                              onStateChanged: (hardwareValue) {
+                                setState(() {
+                                  FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
+                                  
+                                  if (!FfmpegArgumentBuilder.getAvailableEncoders().contains(FfmpegArgumentBuilder.selectedEncoder)) {
+                                    // Doesn't contain current selected encoder. Defaulting to first in available encoders list
+                                    FfmpegArgumentBuilder.selectedEncoder = FfmpegArgumentBuilder.getAvailableEncoders()[0];
+                                  }
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),

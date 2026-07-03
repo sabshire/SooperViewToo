@@ -1,6 +1,27 @@
+import 'dart:io';
+
 class TooltipManager {
   static String getHardwareTooltip() {
-    return "CPU or GPU (Nvidia, Intel, or AMD) encoding.\n\nCPU encoding is slower, but produces marginally better quality.\nGPU encoding is much faster.  Choose your brand of GPU";
+    if (Platform.isWindows || Platform.isLinux)
+    {
+      return "CPU or GPU (Nvidia, Intel, or AMD) encoding.\n\nCPU encoding is slower, but produces marginally better quality.\nGPU encoding is much faster.  Choose your brand of GPU";
+    }
+    else if (Platform.isMacOS)
+    {
+      return "CPU or Mac Hardware encoding.\n\nCPU encoding is slower, but produces marginally better quality.\nMac Hardware encoding is much faster.";
+    }
+    else if (Platform.isAndroid)
+    {
+      return "CPU or Android Hardware encoding.\n\nCPU encoding is slower, but produces marginally better quality.\nAndroid Hardware encoding is much faster.";
+    }
+    else if (Platform.isIOS)
+    {
+      return "CPU or iPhone Hardware encoding.\n\nCPU encoding is slower, but produces marginally better quality.\niPhone Hardware encoding is much faster.";
+    }
+    else 
+    {
+      return "Choose the hardware type for the encoding";
+    }
   }
 
   static String getEncoderTooltip() {
@@ -12,7 +33,7 @@ class TooltipManager {
   }
 
   static String getCRFTooltip() {
-    return "Valid values from 0 to 51.\n\n0 is losless encoding, while 51 is the worst possible encoding.\nValue of 17 or 18 is visually lossless or very close.";
+    return "Valid values from 0 to 51.\n\n0 is losless encoding, while 51 is the worst possible encoding.\nA value of 17 or 18 is visually lossless or very close.";
   }
 
   static String getColorspaceTooltip() {

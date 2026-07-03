@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:sooperview/ffmpeg_manager.dart';
 import 'package:sooperview/file_manager.dart';
+import 'package:sooperview/tooltip_manager.dart';
 import 'package:sooperview/ui/file_list_widget.dart';
 import 'package:sooperview/ui/sooper_encoder_button.dart';
 
@@ -43,54 +44,67 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
         spacing: 20,
         children: [
           Expanded(
-            child: (
-              FileListWidget(
+            child: Tooltip(
+              message: TooltipManager.getFileListTooltip(),
+              child:FileListWidget(
                 fileList: FileManager.fileList,
                 onRemove: (file) => FileManager.RemoveFile(file),
                 onSelectionUpdate: () => setState(() {
                   // Updates on selecting for UI
                 }),
-              )
-            )
+              ),
+            ),
           ),
           // Add Files Button
-          ElevatedButton.icon(
-            onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) ? pickFile : null,
-            icon: const Icon(Icons.add),
-            label: const Text('Choose Video(s)'),
+          Tooltip(
+            message: TooltipManager.getChooseFilesTooltip(),
+            child: ElevatedButton.icon(
+              onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) ? pickFile : null,
+              icon: const Icon(Icons.add),
+              label: const Text('Choose Video(s)'),
+            ),
           ),
 
           // Set Output Dir Button
-          ElevatedButton.icon(
-          onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
-            ? () async {
-                await FileManager.SetOutputDir(manuallySet: true);
-                setState(() {});
-              } : null,          
-            icon: const Icon(Icons.folder),
-            label: const Text('Set Output Folder'),
+          Tooltip(
+            message: TooltipManager.getSetOutputFolderTooltip(),
+            child: ElevatedButton.icon(
+              onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
+                ? () async {
+                    await FileManager.SetOutputDir(manuallySet: true);
+                    setState(() {});
+                  } : null,          
+                icon: const Icon(Icons.folder),
+                label: const Text('Set Output Folder'),
+            ),
           ),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 4,
-            children: [
-              Text(
-                "Current:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold
-                )
-              ),
-              Text(
-                FileManager.outputPath ?? "Not Set",                
-                style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontStyle: FontStyle.italic
-                )
-              ),
-            ],
+          Tooltip(
+            message: TooltipManager.getOutputFolderTooltip(),
+            child:Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 4,
+              children: [
+                Text(
+                  "Current:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                Text(
+                  FileManager.outputPath ?? "Not Set",                
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontStyle: FontStyle.italic
+                  )
+                ),
+              ],
+            ),
           ),
-          SooperEncoderButton(),
+          Tooltip(
+            message: TooltipManager.getEncodeTooltip(),
+            child: SooperEncoderButton(),
+          ),
         ],
       )
     );

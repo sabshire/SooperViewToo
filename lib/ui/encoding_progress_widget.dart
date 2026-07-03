@@ -8,8 +8,14 @@ class EncodingProgressWidget extends StatefulWidget {
   /// Progress value between 0.0 and 1.0
   final double progress;
 
+  /// Progress value between 0.0 and 1.0
+  final double fileProgress;
+
   /// Color for the progress ring
   final Color progressColor;
+
+  /// Color for the inner file progress ring
+  final Color fileProgressColor;
 
   /// Color for the background ring
   final Color backgroundColor;
@@ -28,8 +34,10 @@ class EncodingProgressWidget extends StatefulWidget {
 
   const EncodingProgressWidget({
     super.key,
+    required this.fileProgress,
     required this.progress,
     this.progressColor = Colors.blue,
+    this.fileProgressColor = Colors.teal,
     this.backgroundColor = Colors.blueGrey,
     this.strokeWidth = 12.0,
     this.size = 240.0,
@@ -42,15 +50,19 @@ class EncodingProgressWidget extends StatefulWidget {
 }
 
 class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  late AnimationController _fileAnimationController;
+  late Animation<double> _fileAnimation;
   double _currentProgress = 0.0;
+  double _currentFileProgress = 0.0;
 
   @override
   void initState() {
     super.initState();
     _currentProgress = widget.progress.clamp(0.0, 1.0);
+    _currentFileProgress = widget.fileProgress.clamp(0.0, 1.0);
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -60,6 +72,15 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
       end: _currentProgress,
     ).animate(_animationController);
     _animationController.forward();
+    _fileAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _fileAnimation = Tween<double>(
+      begin: 0.0,
+      end: _currentFileProgress,
+    ).animate(_fileAnimationController);
+    _fileAnimationController.forward();
   }
 
   @override
@@ -73,11 +94,20 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
       ).animate(_animationController);
       _animationController.forward(from: 0);
     }
+    if (oldWidget.fileProgress != widget.fileProgress) {
+      _currentFileProgress = widget.fileProgress.clamp(0.0, 1.0);
+      _fileAnimation = Tween<double>(
+        begin: _animation.value,
+        end: _currentFileProgress,
+      ).animate(_fileAnimationController);
+      _fileAnimationController.forward();
+    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _fileAnimationController.dispose();
     super.dispose();
   }
 
@@ -104,96 +134,138 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Progress Ring
-                AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (context, child) {
-                    return SizedBox(
-                      width: widget.size,
-                      height: widget.size,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // Background ring
-                          CircularProgressIndicator(
-                            value: 1.0,
-                            strokeWidth: widget.strokeWidth,
-                            backgroundColor: widget.backgroundColor.withAlpha(
-                              (widget.backgroundColor.a * 0.3).toInt(),
-                            ),
-                            valueColor: AlwaysStoppedAnimation(
-                              widget.backgroundColor.withAlpha(
-                                (widget.backgroundColor.a * 0.3).toInt(),
-                              ),
-                            ),
-                          ),
-                          // Progress ring
-                          SizedBox(
-                            width: widget.size / 1.5,  // Increase this value to make it bigger
-                            height: widget.size / 1.5, // Keep width and height identical
-                            child: CircularProgressIndicator(
-                              value: FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish ? 1.0 :  _animation.value,
-                              strokeWidth: widget.strokeWidth,
-                              backgroundColor: Colors.transparent,
-                              valueColor: AlwaysStoppedAnimation(
-                                isComplete
-                                    ? Colors.green
-                                    : widget.progressColor,
-                              ),
-                              strokeCap: StrokeCap.round,
-                            ),
-                          ),
-                          // Center content
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Check icon when complete
-                              if (isComplete)
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 48,
-                                  color: Colors.green,
-                                )
-                              else
-                                ...[
-                                  //keep box inside of progress circle
-                                    Column(                                    
-                                      spacing: 2,
-                                      children: [
-                                        Text(
-                                          '$percentage%',
-                                          style: TextStyle(
-                                            fontSize: 36,
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .headlineMedium
-                                                ?.color,
-                                          ),
-                                        ),
 
-                                        Text(
-                                          '${FileManager.currentFile + 1} / ${FileManager.selectedFileList.length}',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.color,
-                                          ),
-                                        ),
-                                      ]
-                                    )
-                                ],
-                            ],
-                          ),
-                        ],
+                SizedBox(
+                  width: widget.size,
+                  height: widget.size,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Progress Ring
+                      AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) {
+                          return SizedBox(
+                            width: widget.size,
+                            height: widget.size,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Background ring
+                                CircularProgressIndicator(
+                                  value: 1.0,
+                                  strokeWidth: widget.strokeWidth,
+                                  backgroundColor: widget.backgroundColor.withAlpha(
+                                    (widget.backgroundColor.a * 0.3).toInt(),
+                                  ),
+                                  valueColor: AlwaysStoppedAnimation(
+                                    widget.backgroundColor.withAlpha(
+                                      (widget.backgroundColor.a * 0.3).toInt(),
+                                    ),
+                                  ),
+                                ),
+                                // Progress ring
+                                SizedBox(
+                                  width: widget.size / 1.25,  // Increase this value to make it bigger
+                                  height: widget.size / 1.25, // Keep width and height identical
+                                  child: CircularProgressIndicator(
+                                    value: FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish ? 1.0 :  _animation.value,
+                                    strokeWidth: widget.strokeWidth,
+                                    backgroundColor: Colors.transparent,
+                                    valueColor: AlwaysStoppedAnimation(
+                                      isComplete
+                                          ? Colors.green
+                                          : widget.progressColor,
+                                    ),
+                                    strokeCap: StrokeCap.round,
+                                  ),
+                                ),
+                                // Center content
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Check icon when complete
+                                    if (isComplete)
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 48,
+                                        color: Colors.green,
+                                      )
+                                    else
+                                      ...[
+                                        //keep box inside of progress circle
+                                          Column(                                    
+                                            spacing: 2,
+                                            children: [
+                                              Text(
+                                                '$percentage%',
+                                                style: TextStyle(
+                                                  fontSize: 36,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineMedium
+                                                      ?.color,
+                                                ),
+                                              ),
+
+                                              Text(
+                                                '${FileManager.currentFile + 1} / ${FileManager.selectedFileList.length}',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.color,
+                                                ),
+                                              ),
+                                            ]
+                                          )
+                                      ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
 
+                      // file progress ring
+                      AnimatedBuilder(
+                        animation: _fileAnimationController,
+                        builder: (context, child) {
+                          return SizedBox(
+                            width: widget.size,
+                            height: widget.size,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Progress ring
+                                SizedBox(
+                                  width: widget.size / 1.5,  // Increase this value to make it bigger
+                                  height: widget.size / 1.5, // Keep width and height identical
+                                  child: CircularProgressIndicator(
+                                    value: FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish ? 1.0 :  _fileAnimation.value,
+                                    strokeWidth: widget.strokeWidth,
+                                    backgroundColor: Colors.transparent,
+                                    valueColor: AlwaysStoppedAnimation(
+                                      isComplete
+                                          ? Colors.green
+                                          : widget.fileProgressColor,
+                                    ),
+                                    strokeCap: StrokeCap.round,
+                                  ),
+                                ),
+                                // Center content
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ]
+                  )
+                ),
 
                 ConstrainedBox(                                    
                   constraints: BoxConstraints(

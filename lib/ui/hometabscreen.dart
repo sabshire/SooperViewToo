@@ -24,6 +24,7 @@ class HomeTabScreen extends StatelessWidget {
               builder: (context, progressPercentage, child) {
                 return EncodingProgressWidget(
                   // The progress math now dynamically updates whenever progressPercentage changes
+                  fileProgress: progressPercentage / 100,
                   progress: ((FileManager.currentFile) / FileManager.selectedFileList.length) + 
                             (progressPercentage / 100 / FileManager.selectedFileList.length),
                   onExitWidget: () {

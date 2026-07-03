@@ -7,7 +7,6 @@ List of bugs and TODOs that need fixed
 ============= TODOs =============
 
 - Making HVC1 tagging on MacOS devices a setting? (Not important)
-- Make progress show both file and overall progress using a double ring, out ring showing overall progress, while and inner ring shows progress on the file
 
 =================== LOW PRIORITY TODO (After Release) ==========================
 

@@ -58,4 +58,8 @@ class TooltipManager {
   static String getFileSelectorTooltip() {
     return "Switch to the File Selector screen to choose which files to encode";
   }
+
+  static String getCancelTooltip() {
+    return "Cancel encoding all files";
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sooperview/file_manager.dart';
+import 'package:sooperview/tooltip_manager.dart';
 import '../ffmpeg_manager.dart';
 
 /// A beautiful, mobile-friendly encoding progress widget
@@ -36,8 +37,8 @@ class EncodingProgressWidget extends StatefulWidget {
     super.key,
     required this.fileProgress,
     required this.progress,
-    this.progressColor = Colors.blue,
-    this.fileProgressColor = Colors.teal,
+    this.progressColor = Colors.lightBlue,
+    this.fileProgressColor = Colors.lightBlueAccent,
     this.backgroundColor = Colors.blueGrey,
     this.strokeWidth = 12.0,
     this.size = 240.0,
@@ -309,7 +310,10 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
 
                 // Cancel / Exit button
                 const SizedBox(height: 24.0),
-                _buildActionButton(),
+                Tooltip(
+                  message:TooltipManager.getCancelTooltip(),
+                  child: _buildActionButton(),
+                ),
               ],
             ),
           ),

@@ -175,7 +175,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                     backgroundColor: Colors.transparent,
                                     valueColor: AlwaysStoppedAnimation(
                                       isComplete
-                                          ? Colors.green
+                                          ? getFinishColor()
                                           : widget.progressColor,
                                     ),
                                     strokeCap: StrokeCap.round,
@@ -188,9 +188,9 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                     // Check icon when complete
                                     if (isComplete)
                                       Icon(
-                                        Icons.check_circle,
+                                        getFinishIcon(),
                                         size: 48,
-                                        color: Colors.green,
+                                        color: getFinishColor(),
                                       )
                                     else
                                       ...[
@@ -252,7 +252,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
                                     backgroundColor: Colors.transparent,
                                     valueColor: AlwaysStoppedAnimation(
                                       isComplete
-                                          ? Colors.green
+                                          ? getFinishColor()
                                           : widget.fileProgressColor,
                                     ),
                                     strokeCap: StrokeCap.round,
@@ -352,6 +352,15 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
       ),
     );
   }
+
+  MaterialColor getFinishColor() {
+    return FileManager.failedFileList.isNotEmpty ? (FileManager.failedFileList.length == FileManager.selectedFileList.length ?  Colors.red : Colors.orange) : Colors.green;
+  }
+
+  IconData getFinishIcon() {
+    return FileManager.failedFileList.isNotEmpty ? (FileManager.failedFileList.length == FileManager.selectedFileList.length ?  Icons.error_rounded : Icons.warning_rounded) : Icons.check_circle;
+  }
+
 }
 
 /// A simplified version showing just the circular progress ring
@@ -401,7 +410,7 @@ class EncodingProgressRing extends StatelessWidget {
             strokeWidth: strokeWidth,
             backgroundColor: Colors.transparent,
             valueColor: AlwaysStoppedAnimation(
-              isComplete ? Colors.green : progressColor,
+              isComplete ? getFinishColor() : progressColor,
             ),
             strokeCap: StrokeCap.round,
           ),
@@ -411,11 +420,15 @@ class EncodingProgressRing extends StatelessWidget {
             style: TextStyle(
               fontSize: size * 0.22,
               fontWeight: FontWeight.bold,
-              color: isComplete ? Colors.green : null,
+              color: isComplete ? getFinishColor() : null,
             ),
           ),
         ],
       ),
     );
+  }
+
+  MaterialColor getFinishColor() {
+    return FileManager.failedFileList.isNotEmpty ? (FileManager.failedFileList.length == FileManager.selectedFileList.length ?  Colors.red : Colors.orange) : Colors.green;
   }
 }

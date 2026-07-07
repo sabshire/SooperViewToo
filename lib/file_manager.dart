@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class FileManager {
 
+  static List<File> failedFileList = [];
   static List<File> fileList = [];
   static List<File> selectedFileList = [];
   static int currentFile = 0;
@@ -24,6 +25,18 @@ class FileManager {
       return true;
     }
     return false;
+  }
+
+  static void markCurrentFileAsFailed() {
+    File? file = GetCurrentSelectedFile();
+    if (file != null) {
+      failedFileList.add(file);
+    }
+  }
+
+  static void reset() {
+    currentFile = 0;
+    failedFileList.clear();
   }
 
   static void AddFile(List<File> files) {

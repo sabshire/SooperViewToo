@@ -36,6 +36,7 @@ class SooperEncoderButton extends StatelessWidget {
     
     FFmpegManager.encoderStatus.value = SooperEncoderStatus.probe;
     onPressed?.call();
+    FileManager.markCurrentFileStatus(SooperEncoderStatus.probe);
     FFmpegManager.ffprobeSession = await FFprobeKit.getMediaInformationAsync("'${FileManager.GetCurrentSelectedFile()?.path}'", onComplete: (session) async {
       FFmpegManager.encoderStatus.value = SooperEncoderStatus.encode;
       final result = session.getLogsAsString();
@@ -47,7 +48,7 @@ class SooperEncoderButton extends StatelessWidget {
 
       if (match == null || match.isEmpty) {
         onFailure?.call();
-        FileManager.markCurrentFileAsFailed();
+        FileManager.markCurrentFileStatus(SooperEncoderStatus.error);
         checkIfMoreFilesToProcess();
         return;
       }
@@ -63,6 +64,7 @@ class SooperEncoderButton extends StatelessWidget {
         Duration(milliseconds: duration.toInt()),
       );
 
+      FileManager.markCurrentFileStatus(SooperEncoderStatus.encode);
       await FFmpegManager.ffmpegSession!.executeAsync(completeCallback: (session) async {
         final returnCode = session.getReturnCode();
         if (FFmpegManager.encoderStatus.value == SooperEncoderStatus.cancelling) {
@@ -76,10 +78,11 @@ class SooperEncoderButton extends StatelessWidget {
           // Call complete event
           onComplete?.call();
           FileManager.moveExistingTempFile("sooperview-temp.${FfmpegArgumentBuilder.videoFormat}", FileManager.GetCurrentSelectedFile()!);
+          FileManager.markCurrentFileStatus(SooperEncoderStatus.finish);
         }  else {
           onFailure?.call();
           //track errors for when finished
-          FileManager.markCurrentFileAsFailed();
+          FileManager.markCurrentFileStatus(SooperEncoderStatus.error);
         }
 
         checkIfMoreFilesToProcess();

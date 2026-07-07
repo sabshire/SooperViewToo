@@ -4,11 +4,13 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sooperview/ffmpeg_manager.dart';
 
 
 class FileManager {
 
-  static List<File> failedFileList = [];
+  static List<SooperEncoderStatus> fileEncodeStatus = [];
+  //static List<File> failedFileList = [];
   static List<File> fileList = [];
   static List<File> selectedFileList = [];
   static int currentFile = 0;
@@ -27,21 +29,46 @@ class FileManager {
     return false;
   }
 
-  static void markCurrentFileAsFailed() {
-    File? file = GetCurrentSelectedFile();
-    if (file != null) {
-      failedFileList.add(file);
+  // static void markCurrentFileAsFailed() {
+  //   fileEncodeStatus[currentFile] = SooperEncoderStatus.error;
+  
+  //   File? file = GetCurrentSelectedFile();
+  //   if (file != null) {
+  //     //failedFileList.add(file);
+  //   }
+  // }
+
+  static void markCurrentFileStatus(SooperEncoderStatus status) {
+    fileEncodeStatus[currentFile] = status;
+  }
+
+  static void markUnprocessedFiles(SooperEncoderStatus status) {
+    for (int i = 0; i < fileEncodeStatus.length; i++) {
+      if (fileEncodeStatus[i] == SooperEncoderStatus.none) {
+        fileEncodeStatus[i] = status;
+      }
     }
+  }
+
+  static SooperEncoderStatus getFileEncodeStatus(int index) {
+    if (index < 0 || index >= fileEncodeStatus.length) return SooperEncoderStatus.none;
+    return fileEncodeStatus[index];
   }
 
   static void reset() {
     currentFile = 0;
-    failedFileList.clear();
+    //failedFileList.clear();
+    for (int i = 0; i < fileEncodeStatus.length; i++) {
+      fileEncodeStatus[i] = SooperEncoderStatus.none;
+    }
   }
 
   static void AddFile(List<File> files) {
     fileList.addAll(files);
-    fileCount.value++;
+    fileCount.value+=files.length;
+    for(int i = 0; i< files.length; i++) {
+      fileEncodeStatus.add(SooperEncoderStatus.none);
+    }
   }
 
   static File? GetCurrentSelectedFile() {

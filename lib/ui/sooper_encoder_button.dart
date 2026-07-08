@@ -123,10 +123,14 @@ class SooperEncoderButton extends StatelessWidget {
       builder: (context, child) { 
         return ElevatedButton.icon(
           onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileCount.value == 0) || (!FileManager.isOutputPathSet())) ? null : () {FileManager.reset(); encode();},
-          icon: const Icon(Icons.play_arrow, color: Colors.green,),
+          icon: Icon(Icons.play_arrow, color: getEncodeButtonIconColor(),),
           label: const Text('Encode'),
         );
       },
     );
+  }
+
+  MaterialColor getEncodeButtonIconColor() {
+    return ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileCount.value == 0) || (!FileManager.isOutputPathSet())) ? Colors.grey : Colors.green;
   }
 }

@@ -115,10 +115,18 @@ class SooperEncoderButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileList.isEmpty) || (!FileManager.isOutputPathSet())) ? null : () {FileManager.reset(); encode();},
-      icon: const Icon(Icons.play_arrow, color: Colors.green,),
-      label: const Text('Encode'),
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        FFmpegManager.encoderStatus,
+        FileManager.selectedFileCount, // Ensure you add this static notifier to FileManager
+      ]), // Replace with your ChangeNotifier or ValueNotifier
+      builder: (context, child) { 
+        return ElevatedButton.icon(
+          onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none) || (FileManager.selectedFileCount.value == 0) || (!FileManager.isOutputPathSet())) ? null : () {FileManager.reset(); encode();},
+          icon: const Icon(Icons.play_arrow, color: Colors.green,),
+          label: const Text('Encode'),
+        );
+      },
     );
   }
 }

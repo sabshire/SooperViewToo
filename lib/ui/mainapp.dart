@@ -26,21 +26,7 @@ class MainApp extends StatelessWidget {
         )
       ),
       home: SafeArea(child: const HomeTabScreen()),
-      themeMode: ThemeMode.system, 
-      builder: (context, child) {
-        return DropTarget(
-          onDragEntered: (details) => print('DEBUG: file entered the window!'),
-          onDragExited: (details) => print('DEBUG: file left the window!'),
-          onDragDone: (details) async {
-            for (final file in details.files) {
-              File f = File(file.path);
-              FileManager.AddFile([f]);
-              FileManager.AddToSelectedFiles(f);
-            }
-          },
-          child: child ?? const SizedBox.shrink(),
-        );
-      },
+      themeMode: ThemeMode.system,       
     );
   }
 }

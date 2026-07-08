@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:ui';
+//import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:sooperview/file_manager.dart';
@@ -88,7 +88,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
 
   @override
   Widget build(BuildContext context) {
-    final percentage = (_animation.value * 100).toInt();
+    //final percentage = (_animation.value * 100).toInt();
     //final isComplete = FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish;
     final files = FileManager.selectedFileList; 
 
@@ -96,7 +96,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
       child: Container(
         padding: const EdgeInsets.all(24.0),
         constraints: const BoxConstraints(
-          maxWidth: 600,                  
+          maxWidth: double.infinity,                  
         ),
         child: Card(
           elevation: 8,
@@ -109,6 +109,17 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
             child: Column(              
               mainAxisSize: MainAxisSize.min,
               children: [
+                Padding(
+                  padding:EdgeInsetsGeometry.all(5),
+                  child: Text(
+                    getProcessingText(),
+                    textAlign: TextAlign.center,   
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    )               
+                  ),
+                ),
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -208,11 +219,7 @@ class _EncodingProgressWidgetState extends State<EncodingProgressWidget>
     }
   }
 
-  //MaterialColor getFinishColor() {
-  //  return FileManager.failedFileList.isNotEmpty ? (FileManager.failedFileList.length == FileManager.selectedFileList.length ?  Colors.red : Colors.orange) : Colors.green;
-  //}
-
-  //IconData getFinishIcon() {
-  //  return FileManager.failedFileList.isNotEmpty ? (FileManager.failedFileList.length == FileManager.selectedFileList.length ?  Icons.error_rounded : Icons.warning_rounded) : Icons.check_circle;
-  //}
+  String getProcessingText() {
+    return FFmpegManager.encoderStatus.value == SooperEncoderStatus.finish ? "Processing Finished" : "Processing File ${FileManager.currentFile + 1} / ${FileManager.selectedFileList.length}";
+  }
 }

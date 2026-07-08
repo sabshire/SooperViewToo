@@ -30,9 +30,10 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
         files.add(File(result.files[fileNum].path!));
       }
       
+      FileManager.AddFile(files);
+      files.forEach(FileManager.AddToSelectedFiles);        
+
       setState(() {
-        FileManager.AddFile(files);
-        files.forEach(FileManager.AddToSelectedFiles);        
       });
     }
   }

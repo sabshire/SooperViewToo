@@ -35,6 +35,7 @@ class MainApp extends StatelessWidget {
             for (final file in details.files) {
               File f = File(file.path);
               FileManager.AddFile([f]);
+              FileManager.AddToSelectedFiles(f);
             }
           },
           child: child ?? const SizedBox.shrink(),

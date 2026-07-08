@@ -32,6 +32,7 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
       
       setState(() {
         FileManager.AddFile(files);
+        files.forEach(FileManager.AddToSelectedFiles);        
       });
     }
   }

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sooperview"
+    namespace = "org.lemonsheep.sooperview"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
     

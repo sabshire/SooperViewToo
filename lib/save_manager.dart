@@ -5,46 +5,46 @@ import 'package:sooperview/ffmpeg_argument_builder.dart';
 class SaveManager {
 
   static Future<void> loadSettings() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
-    if (prefs.containsKey("Encoder")) {
-      var enc = prefs.getString("Encoder")!;
-      if (enc.isNotEmpty) { FfmpegArgumentBuilder.selectedEncoder = enc; }
+    if (await prefs.containsKey("Encoder")) {
+      var enc = await prefs.getString("Encoder");
+      if (enc != null && enc.isNotEmpty) { FfmpegArgumentBuilder.selectedEncoder = enc; }
     }
 
-    if (prefs.containsKey("Hardware")) {
-      var hardware = prefs.getString("Hardware")!;
-      if (hardware.isNotEmpty) { FfmpegArgumentBuilder.selectedHardware = hardware; }
+    if (await prefs.containsKey("Hardware")) {
+      var hardware = await prefs.getString("Hardware");
+      if (hardware != null && hardware.isNotEmpty) { FfmpegArgumentBuilder.selectedHardware = hardware; }
     }
 
-    if (prefs.containsKey("Colorspace")) {
-      var color = prefs.getString("Colorspace")!;
-      if (color.isNotEmpty) { FfmpegArgumentBuilder.selectedColorspace = color; }
+    if (await prefs.containsKey("Colorspace")) {
+      var color = await prefs.getString("Colorspace");
+      if (color != null && color.isNotEmpty) { FfmpegArgumentBuilder.selectedColorspace = color; }
     }
 
-    if (prefs.containsKey("Resolution")) {
-      var res = prefs.getString("Resolution")!;
-      if (res.isNotEmpty) { FfmpegArgumentBuilder.selectedResolution = res; }
+    if (await prefs.containsKey("Resolution")) {
+      var res = await prefs.getString("Resolution");
+      if (res != null && res.isNotEmpty) { FfmpegArgumentBuilder.selectedResolution = res; }
     }
 
-    if (prefs.containsKey("CRF")) {
-      int? crf = prefs.getInt("CRF");
+    if (await prefs.containsKey("CRF")) {
+      int? crf = await prefs.getInt("CRF");
       if (crf != null) { FfmpegArgumentBuilder.SetCRFValue(crf); }
     }
 
-    if (prefs.containsKey("Preset")) {
-      var preset = prefs.getString("Preset")!;
-      if (preset.isNotEmpty) { FfmpegArgumentBuilder.SetCurrentPresetValue(preset); }
+    if (await prefs.containsKey("Preset")) {
+      var preset = await prefs.getString("Preset");
+      if (preset != null && preset.isNotEmpty) { FfmpegArgumentBuilder.SetCurrentPresetValue(preset); }
     }
 
-    if (prefs.containsKey("OUTPUT_DIR")) {
-      var outputDir = prefs.getString("OUTPUT_DIR")!;
-      if (outputDir.isNotEmpty) { FileManager.outputPath = outputDir; }
+    if (await prefs.containsKey("OUTPUT_DIR")) {
+      var outputDir = await prefs.getString("OUTPUT_DIR");
+      if (outputDir != null && outputDir.isNotEmpty) { FileManager.outputPath = outputDir; }
     }    
   }
 
   static Future<void> saveSettings() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
     prefs.setString("Encoder", FfmpegArgumentBuilder.selectedEncoder);
     prefs.setString("Hardware", FfmpegArgumentBuilder.selectedHardware);

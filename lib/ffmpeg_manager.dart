@@ -26,26 +26,26 @@ class FFmpegManager {
 
   static FFplaySession? ffplaySession;
 
-  static void SetSession(FFmpegSession session, int totalFrames) {
+  static void setSession(FFmpegSession session, int totalFrames) {
     ffmpegSession = session;
     ffmpegTotalFrameNum = totalFrames;
   }
 
-  static SessionState? GetState() {
+  static SessionState? getState() {
     if (ffmpegSession != null) {
       return ffmpegSession!.getState();
     }
     return null;
   }
 
-  static void ResetFFmpeg() {
+  static void resetFFmpeg() {
     ffmpegSession = null;
     ffmpegTotalFrameNum = 0;
     ffmpegCurrentFrameNum = 0;
   }
 
   static void onFinish() {
-    ResetFFmpeg();
+    resetFFmpeg();
     //FileManager.currentFile = 0;
   }
 

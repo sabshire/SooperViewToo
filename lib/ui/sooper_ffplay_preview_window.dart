@@ -40,7 +40,7 @@ class _SooperViewPreviewerState extends State<SooperViewPreviewer> {
 
   Future<void> _initializeFFplay() async {
     try {
-      String filePath = FileManager.GetCurrentSelectedFile()!.path;
+      String filePath = FileManager.getCurrentSelectedFile()!.path;
       await FFprobeKit.getMediaInformationAsync("'$filePath'", onComplete: (session) async {
         final result = session.getLogsAsString();
 

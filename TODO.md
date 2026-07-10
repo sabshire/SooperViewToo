@@ -2,9 +2,6 @@ List of bugs and TODOs that need fixed
 
 ============= BUGS =============
 
-- 10-bit doesn't work on NVIDIA H264
-
-- Labels above settings in dark mode are black
 
 ============= TODOs =============
 

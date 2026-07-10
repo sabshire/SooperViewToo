@@ -29,12 +29,12 @@ class SaveManager {
 
     if (await prefs.containsKey("CRF")) {
       int? crf = await prefs.getInt("CRF");
-      if (crf != null) { FfmpegArgumentBuilder.SetCRFValue(crf); }
+      if (crf != null) { FfmpegArgumentBuilder.setCRFValue(crf); }
     }
 
     if (await prefs.containsKey("Preset")) {
       var preset = await prefs.getString("Preset");
-      if (preset != null && preset.isNotEmpty) { FfmpegArgumentBuilder.SetCurrentPresetValue(preset); }
+      if (preset != null && preset.isNotEmpty) { FfmpegArgumentBuilder.setCurrentPresetValue(preset); }
     }
 
     if (await prefs.containsKey("OUTPUT_DIR")) {
@@ -50,8 +50,8 @@ class SaveManager {
     prefs.setString("Hardware", FfmpegArgumentBuilder.selectedHardware);
     prefs.setString("Colorspace", FfmpegArgumentBuilder.selectedColorspace);
     prefs.setString("Resolution", FfmpegArgumentBuilder.selectedResolution);
-    prefs.setInt("CRF", FfmpegArgumentBuilder.GetCRFValue());
-    prefs.setString("Preset", FfmpegArgumentBuilder.GetCurrentPresetValue());
+    prefs.setInt("CRF", FfmpegArgumentBuilder.getCRFValue());
+    prefs.setString("Preset", FfmpegArgumentBuilder.getCurrentPresetValue());
   }
 
   static Future<void> loadDefaultSettings() async {

@@ -50,7 +50,7 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                             label: "Hardware",
                             child: SooperDropdown(
                               dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
-                              dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
+                              dropdownValueList: FfmpegArgumentBuilder.getAvailableHardwareList(),
                               onStateChanged: (hardwareValue) {
                                 setState(() {
                                   FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
@@ -112,11 +112,11 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                           child:SooperLabel(
                             label: "CRF",
                             child: SooperDropdown<int>(
-                              dropdownValue: FfmpegArgumentBuilder.GetCRFValue(), 
-                              dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(),
+                              dropdownValue: FfmpegArgumentBuilder.getCRFValue(), 
+                              dropdownValueList: FfmpegArgumentBuilder.getCRFValueList(),
                               onStateChanged: (int? crfValue) {
                                 setState(() {
-                                  FfmpegArgumentBuilder.SetCRFValue(crfValue!);
+                                  FfmpegArgumentBuilder.setCRFValue(crfValue!);
                                 });
                               },
                             ),
@@ -155,11 +155,11 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                             child: SooperLabel(
                               label: "Preset",
                               child: SooperDropdown(
-                                dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(), 
-                                dropdownValueList: FfmpegArgumentBuilder.GetCurrentPresetList()!,
+                                dropdownValue: FfmpegArgumentBuilder.getCurrentPresetValue(), 
+                                dropdownValueList: FfmpegArgumentBuilder.getCurrentPresetList()!,
                                 onStateChanged: (presetValue) {
                                   setState(() {
-                                    setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(presetValue!));
+                                    setState(() => FfmpegArgumentBuilder.setCurrentPresetValue(presetValue!));
                                   });
                                 },
                               ),

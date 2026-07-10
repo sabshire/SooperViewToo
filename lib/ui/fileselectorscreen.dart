@@ -30,8 +30,8 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
         files.add(File(result.files[fileNum].path!));
       }
       
-      FileManager.AddFile(files);
-      files.forEach(FileManager.AddToSelectedFiles);        
+      FileManager.addFile(files);
+      files.forEach(FileManager.addToSelectedFiles);        
 
       setState(() {
       });
@@ -50,7 +50,7 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
               message: TooltipManager.getFileListTooltip(),
               child:FileListWidget(
                 fileList: FileManager.fileList,
-                onRemove: (file) => FileManager.RemoveFile(file),
+                onRemove: (file) => FileManager.removeFile(file),
                 onSelectionUpdate: () => setState(() {
                   // Updates on selecting for UI
                 }),
@@ -73,7 +73,7 @@ class FileSelectorScreenState extends State<FileSelectorScreen> {
             child: ElevatedButton.icon(
               onPressed: (FFmpegManager.encoderStatus.value == SooperEncoderStatus.none) 
                 ? () async {
-                    await FileManager.SetOutputDir(manuallySet: true);
+                    await FileManager.setOutputDir(manuallySet: true);
                     setState(() {});
                   } : null,          
                 icon: const Icon(Icons.folder),

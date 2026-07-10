@@ -28,9 +28,9 @@ class _FileListWidgetState extends State<FileListWidget> {
   void _toggleSelection(File file) {
     setState(() {
       if (FileManager.selectedFileList.contains(file)) {
-        FileManager.RemoveFromSelectedFiles(file);
+        FileManager.removeFromSelectedFiles(file);
       } else {
-        FileManager.AddToSelectedFiles(file);
+        FileManager.addToSelectedFiles(file);
       }
     });
 
@@ -52,8 +52,8 @@ class _FileListWidgetState extends State<FileListWidget> {
           onDragDone: (details)  async {
             for (final file in details.files) {
               File f = File(file.path);
-              FileManager.AddFile([f]);
-              FileManager.AddToSelectedFiles(f);
+              FileManager.addFile([f]);
+              FileManager.addToSelectedFiles(f);
             }
             setState(() {
               
@@ -106,8 +106,8 @@ class _FileListWidgetState extends State<FileListWidget> {
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
                             // Keep mutations inside the static manager; it handles the notification
-                            FileManager.RemoveFromSelectedFiles(file);
-                            FileManager.RemoveFile(file); 
+                            FileManager.removeFromSelectedFiles(file);
+                            FileManager.removeFile(file); 
                             widget.onRemove(file); 
                             widget.onSelectionUpdate?.call();
                           },

@@ -10,6 +10,6 @@ What you need is a way to take that 4:3 full sensor footage and stretch it to 16
 
 SooperView runs on Windows, Mac, Android, and iOS.
 
-<img style='display:inline-block;width:300px;' src='data/screenshots/windows-setings.png' />
-<img style='display:inline-block;width:300px;' src='data/screenshots/windows-file-selector.png' />
-<img style='display:inline-block;width:300px;' src='data/screenshots/windows-encoding.png' />
+<img style='display:inline-block;width:600px;' src='data/screenshots/windows-settings.png' />
+<img style='display:inline-block;width:600px;' src='data/screenshots/windows-file-selector.png' />
+<img style='display:inline-block;width:600px;' src='data/screenshots/windows-encoding.png' />

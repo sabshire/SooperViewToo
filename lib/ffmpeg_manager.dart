@@ -1,6 +1,6 @@
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sooperview/file_manager.dart';
+//import 'package:sooperview/file_manager.dart';
 
 // Status Types for encoder
 enum SooperEncoderStatus {
@@ -8,7 +8,8 @@ enum SooperEncoderStatus {
   probe,
   encode,
   finish,
-  cancelling
+  cancelling,
+  error
 }
 
 class FFmpegManager {
@@ -25,27 +26,27 @@ class FFmpegManager {
 
   static FFplaySession? ffplaySession;
 
-  static void SetSession(FFmpegSession session, int totalFrames) {
+  static void setSession(FFmpegSession session, int totalFrames) {
     ffmpegSession = session;
     ffmpegTotalFrameNum = totalFrames;
   }
 
-  static SessionState? GetState() {
+  static SessionState? getState() {
     if (ffmpegSession != null) {
       return ffmpegSession!.getState();
     }
     return null;
   }
 
-  static void ResetFFmpeg() {
+  static void resetFFmpeg() {
     ffmpegSession = null;
     ffmpegTotalFrameNum = 0;
     ffmpegCurrentFrameNum = 0;
   }
 
   static void onFinish() {
-    ResetFFmpeg();
-    FileManager.currentFile = 0;
+    resetFFmpeg();
+    //FileManager.currentFile = 0;
   }
 
   static String getStatusToText(SooperEncoderStatus status) {
@@ -58,6 +59,8 @@ class FFmpegManager {
         return "Cancelling";
       case SooperEncoderStatus.finish:
         return "Finished";
+      case SooperEncoderStatus.error:
+        return "Error";
       default:
         return "Shouldn't see this";
     }

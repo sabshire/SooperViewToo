@@ -185,11 +185,10 @@ class RemapFileGenerator {
         await ySink.close();
       }
       
-    } catch (exception, stackTrace) {
-      print('ERROR: Failed to generate remap files: $exception');
-      print('Stack trace: $stackTrace');
+    } catch (exception) {
+      //print('ERROR: Failed to generate remap files: $exception');
+      //print('Stack trace: $stackTrace');
       rethrow;
     }
   }
-
 }

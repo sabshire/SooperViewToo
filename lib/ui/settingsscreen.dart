@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sooperview/ffmpeg_manager.dart';
 import 'package:sooperview/save_manager.dart';
 import 'package:sooperview/ffmpeg_argument_builder.dart';
+import 'package:sooperview/tooltip_manager.dart';
 import 'package:sooperview/ui/sooper_dropdown.dart';
 import 'package:sooperview/ui/sooper_labelwidget.dart';
 
@@ -44,35 +44,41 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
-                        child: SooperLabel(
-                          label: "Hardware",
-                          child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
-                            dropdownValueList: FfmpegArgumentBuilder.GetAvailableHardwareList(),
-                            onStateChanged: (hardwareValue) {
-                              setState(() {
-                                FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
-                                
-                                if (!FfmpegArgumentBuilder.getAvailableEncoders().contains(FfmpegArgumentBuilder.selectedEncoder)) {
-                                  // Doesn't contain current selected encoder. Defaulting to first in available encoders list
-                                  FfmpegArgumentBuilder.selectedEncoder = FfmpegArgumentBuilder.getAvailableEncoders()[0];
-                                }
-                              });
-                            },
+                        child: Tooltip(
+                          message: TooltipManager.getHardwareTooltip(),
+                          child:SooperLabel(
+                            label: "Hardware",
+                            child: SooperDropdown(
+                              dropdownValue: FfmpegArgumentBuilder.selectedHardware, 
+                              dropdownValueList: FfmpegArgumentBuilder.getAvailableHardwareList(),
+                              onStateChanged: (hardwareValue) {
+                                setState(() {
+                                  FfmpegArgumentBuilder.selectedHardware = hardwareValue ?? 'CPU';
+                                  
+                                  if (!FfmpegArgumentBuilder.getAvailableEncoders().contains(FfmpegArgumentBuilder.selectedEncoder)) {
+                                    // Doesn't contain current selected encoder. Defaulting to first in available encoders list
+                                    FfmpegArgumentBuilder.selectedEncoder = FfmpegArgumentBuilder.getAvailableEncoders()[0];
+                                  }
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: SooperLabel(
-                          label: "Encoder",
-                          child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.selectedEncoder, 
-                            dropdownValueList: FfmpegArgumentBuilder.getAvailableEncoders(),
-                            onStateChanged: (encoderValue) {
-                              setState(() {
-                                FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.getAvailableEncoders()[0];
-                              });
-                            },
+                      Expanded(                        
+                        child: Tooltip(
+                          message: TooltipManager.getEncoderTooltip(),
+                          child: SooperLabel(
+                            label: "Encoder",
+                            child: SooperDropdown(
+                              dropdownValue: FfmpegArgumentBuilder.selectedEncoder, 
+                              dropdownValueList: FfmpegArgumentBuilder.getAvailableEncoders(),
+                              onStateChanged: (encoderValue) {
+                                setState(() {
+                                  FfmpegArgumentBuilder.selectedEncoder = encoderValue ??  FfmpegArgumentBuilder.getAvailableEncoders()[0];
+                                });
+                              },
+                            ),
                           ),
                         )
                       ),
@@ -84,30 +90,36 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
-                        child: SooperLabel(
-                          label: "Resolution",
-                          child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.selectedResolution, 
-                            dropdownValueList: FfmpegArgumentBuilder.resolutionItems,
-                            onStateChanged: (resolutionValue) {
-                              setState(() {
-                                FfmpegArgumentBuilder.selectedResolution = resolutionValue ?? FfmpegArgumentBuilder.resolutionItems[0];
-                              });
-                            },
+                        child: Tooltip(
+                          message: TooltipManager.getResolutionTooltip(),
+                          child:SooperLabel(
+                            label: "Resolution",
+                            child: SooperDropdown(
+                              dropdownValue: FfmpegArgumentBuilder.selectedResolution, 
+                              dropdownValueList: FfmpegArgumentBuilder.resolutionItems,
+                              onStateChanged: (resolutionValue) {
+                                setState(() {
+                                  FfmpegArgumentBuilder.selectedResolution = resolutionValue ?? FfmpegArgumentBuilder.resolutionItems[0];
+                                });
+                              },
+                            ),
                           ),
                         )
                       ),
                       Expanded(
-                        child: SooperLabel(
-                          label: "CRF",
-                          child: SooperDropdown<int>(
-                            dropdownValue: FfmpegArgumentBuilder.GetCRFValue(), 
-                            dropdownValueList: FfmpegArgumentBuilder.GetCRFValueList(),
-                            onStateChanged: (int? crfValue) {
-                              setState(() {
-                                FfmpegArgumentBuilder.SetCRFValue(crfValue!);
-                              });
-                            },
+                        child: Tooltip(
+                          message: TooltipManager.getCRFTooltip(),
+                          child:SooperLabel(
+                            label: "CRF",
+                            child: SooperDropdown<int>(
+                              dropdownValue: FfmpegArgumentBuilder.getCRFValue(), 
+                              dropdownValueList: FfmpegArgumentBuilder.getCRFValueList(),
+                              onStateChanged: (int? crfValue) {
+                                setState(() {
+                                  FfmpegArgumentBuilder.setCRFValue(crfValue!);
+                                });
+                              },
+                            ),
                           ),
                         )
                       ),
@@ -118,16 +130,19 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
-                        child: SooperLabel(
-                          label: "Colorspace",
-                          child: SooperDropdown(
-                            dropdownValue: FfmpegArgumentBuilder.selectedColorspace, 
-                            dropdownValueList: FfmpegArgumentBuilder.colorspaceItems,
-                            onStateChanged: (colorspaceValue) {
-                              setState(() {
-                                FfmpegArgumentBuilder.selectedColorspace = colorspaceValue ?? '8-bit';
-                              });
-                            },
+                        child: Tooltip(
+                          message: TooltipManager.getColorspaceTooltip(),
+                          child:SooperLabel(
+                            label: "Colorspace",
+                            child: SooperDropdown(
+                              dropdownValue: FfmpegArgumentBuilder.selectedColorspace, 
+                              dropdownValueList: FfmpegArgumentBuilder.colorspaceItems,
+                              onStateChanged: (colorspaceValue) {
+                                setState(() {
+                                  FfmpegArgumentBuilder.selectedColorspace = colorspaceValue ?? '8-bit';
+                                });
+                              },
+                            ),
                           ),
                         )
                       ),
@@ -135,21 +150,24 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                       // PRESET VALUES
                       if (FfmpegArgumentBuilder.selectedHardware == "CPU" || FfmpegArgumentBuilder.selectedHardware == "NVIDIA" || FfmpegArgumentBuilder.selectedHardware == "AMD" || FfmpegArgumentBuilder.selectedHardware == "INTEL")
                         Expanded(
-                          child: SooperLabel(
-                            label: "Preset",
-                            child: SooperDropdown(
-                              dropdownValue: FfmpegArgumentBuilder.GetCurrentPresetValue(), 
-                              dropdownValueList: FfmpegArgumentBuilder.GetCurrentPresetList()!,
-                              onStateChanged: (presetValue) {
-                                setState(() {
-                                  setState(() => FfmpegArgumentBuilder.SetCurrentPresetValue(presetValue!));
-                                });
-                              },
+                          child: Tooltip(
+                            message: TooltipManager.getPresetTooltip(),
+                            child: SooperLabel(
+                              label: "Preset",
+                              child: SooperDropdown(
+                                dropdownValue: FfmpegArgumentBuilder.getCurrentPresetValue(), 
+                                dropdownValueList: FfmpegArgumentBuilder.getCurrentPresetList()!,
+                                onStateChanged: (presetValue) {
+                                  setState(() {
+                                    setState(() => FfmpegArgumentBuilder.setCurrentPresetValue(presetValue!));
+                                  });
+                                },
+                              ),
                             ),
                           )
                         ),
                       ],
-                  ),                
+                  ),
 
                   // Row 4 (Load and Save Settings Buttons)
                   Row(
@@ -157,28 +175,34 @@ class SooperViewSettingsState extends State<SooperViewSettingsScreen> {
                     spacing: 16,
                     children: [
                       Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                            await SaveManager.loadDefaultSettings();
-                            setState(() {
-                              // Load Default Settings done
-                            });
-                          },
-                          label: const Text('Load Defaults'),
+                        child: Tooltip(
+                          message: TooltipManager.getLoadDefaultsTooltip(),
+                          child: ElevatedButton.icon(
+                            onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
+                              await SaveManager.loadDefaultSettings();
+                              setState(() {
+                                // Load Default Settings done
+                              });
+                            },
+                            label: const Text('Load Defaults'),
+                          ),
                         ),
                       ),
 
                       // Save Settings Button
                       Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
-                            await SaveManager.saveSettings();
-                            setState(() {
-                              // Save New Settings done
-                            });
-                          },
-                          icon: const Icon(Icons.save, color: Colors.blue,),
-                          label: const Text('Save Settings'),
+                        child: Tooltip(
+                          message: TooltipManager.getSaveSettingsTooltip(),
+                          child: ElevatedButton.icon(
+                            onPressed: ((FFmpegManager.encoderStatus.value != SooperEncoderStatus.none)) ? null : () async {
+                              await SaveManager.saveSettings();
+                              setState(() {
+                                // Save New Settings done
+                              });
+                            },
+                            icon: const Icon(Icons.save, color: Colors.blue,),
+                            label: const Text('Save Settings'),
+                          ),
                         ), 
                       ),
                     ],

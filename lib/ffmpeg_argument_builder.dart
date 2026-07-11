@@ -91,7 +91,7 @@ class FfmpegArgumentBuilder {
     
   };
 
-  static List<String>? GetCurrentPresetList() {
+  static List<String>? getCurrentPresetList() {
     return presetValues[(selectedHardware, selectedEncoder)];
   }
 
@@ -102,7 +102,7 @@ class FfmpegArgumentBuilder {
   static String cpuAV1Value = "6";
   static String selectedAndroidBitrateMode = "cq";
 
-  static String GetCurrentPresetValue() {
+  static String getCurrentPresetValue() {
     switch (selectedHardware) {
       case "NVIDIA":
         return nvidiaPresetValue;
@@ -128,7 +128,7 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static void SetCurrentPresetValue(String value) {
+  static void setCurrentPresetValue(String value) {
     switch (selectedHardware) {
       case "NVIDIA":
         nvidiaPresetValue = value;
@@ -158,7 +158,7 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static String GetPresetArgument() {
+  static String getPresetArgument() {
     switch (selectedHardware) {
       case "NVIDIA":
         return "-preset $nvidiaPresetValue";
@@ -184,7 +184,7 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static List<String> GetAvailableHardwareList() {
+  static List<String> getAvailableHardwareList() {
     if (Platform.isAndroid) {
       return ["CPU", "Android"];
     }
@@ -206,7 +206,7 @@ class FfmpegArgumentBuilder {
 
   static int crfValue = 18;
   static int crfAndroidValue = 80;
-  static String GetCRFArgument() {
+  static String getCRFArgument() {
     switch(selectedHardware) {
       case "NVIDIA":
         return "-rc constqp -cq:v $crfValue -b:v 0"; // Not sure if -b:v is needed
@@ -226,7 +226,7 @@ class FfmpegArgumentBuilder {
     }
   }
   
-  static List<int> GetCRFValueList() {
+  static List<int> getCRFValueList() {
     if (selectedHardware == "Android") {
       return List.generate(101, (index) => index);
     } else {
@@ -234,14 +234,14 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static int GetCRFValue() {
+  static int getCRFValue() {
     if (selectedHardware == "Android") {
       return crfAndroidValue;
     } else {
       return crfValue;
     }
   }
-  static void SetCRFValue(int crf) {
+  static void setCRFValue(int crf) {
     if (selectedHardware == "Android") {
       crfAndroidValue = crf;
       return;
@@ -253,7 +253,7 @@ class FfmpegArgumentBuilder {
   static String selectedColorspace = "8-bit";
   static final List<String> colorspaceItems = ["8-bit", "10-bit"];
 
-  static String GetPixelFormat() {
+  static String getPixelFormat() {
     switch(selectedColorspace) {
       case "10-bit":
         return "-pix_fmt yuv420p10le";
@@ -264,7 +264,7 @@ class FfmpegArgumentBuilder {
     }
   }
   
-  static String GetHeight(String res) {
+  static String getHeight(String res) {
     switch(res) {
       case "720p":
         return "720";
@@ -286,7 +286,7 @@ class FfmpegArgumentBuilder {
     }
   }
 
-  static String GetWidth(String res) {
+  static String getWidth(String res) {
     switch(res) {
       case "720p":
         return "1280";
@@ -325,7 +325,7 @@ class FfmpegArgumentBuilder {
     '-i "$filePath" '
     '-vf "movie=${wrapFilterPath(xmapPath)}[x]; '
     "movie=${wrapFilterPath(ymapPath)}[y]; "
-    '[in][x][y]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)}" ';
+    '[in][x][y]remap,scale=${getWidth(selectedResolution)}:${getHeight(selectedResolution)}" ';
 
   static String escapeFilterPath(String path) {
   return path
@@ -336,12 +336,12 @@ class FfmpegArgumentBuilder {
   static String wrapFilterPath(String path) =>
     "'${escapeFilterPath(path)}'";
 
-  static Future<String> BuildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async {
+  static Future<String> buildFFmpegArguments(String sourceFile, String xmapPath, String ymapPath) async {
     final Directory tempDir = await getTemporaryDirectory();
     final path = p.join(tempDir.path, "sooperview-temp.$videoFormat");
     String fileTag = ""; // For HEVC file tag to fix mac quicktime problems
     if (selectedEncoder == "HEVC" && (Platform.isMacOS || Platform.isIOS)) { fileTag = " -tag:v hvc1"; } // TODO: Make this into a setting!
-    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${GetWidth(selectedResolution)}:${GetHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${GetCRFArgument()} ${GetPresetArgument()} ${GetPixelFormat()}$fileTag ${path}";
+    return "-y -i ${wrapPathInQuotes(sourceFile)} -i $xmapPath -i $ymapPath -filter_complex [0:v][1:v][2:v]remap,scale=${getWidth(selectedResolution)}:${getHeight(selectedResolution)} ${encoderSettings[(selectedHardware, selectedEncoder)]} ${getCRFArgument()} ${getPresetArgument()} ${getPixelFormat()}$fileTag $path";
   }
 
   static String wrapPathInQuotes(String path) => "'$path'";

@@ -9,7 +9,7 @@ void main() async {
   await FFmpegKitExtended.initialize();
   await SaveManager.loadSettings();
 
-  FileManager.CleanCache(); // Cleans cache on startup (Only affects mobile devices)
+  FileManager.cleanCache(); // Cleans cache on startup (Only affects mobile devices)
 
   runApp(const MainApp());
 }

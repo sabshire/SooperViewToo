@@ -3,11 +3,9 @@ List of bugs and TODOs that need fixed
 ============= BUGS =============
 
 
-
 ============= TODOs =============
 
 - Making HVC1 tagging on MacOS devices a setting? (Not important)
-
 
 =================== LOW PRIORITY TODO (After Release) ==========================
 

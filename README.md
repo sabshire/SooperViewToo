@@ -8,8 +8,11 @@ With the advent of the DJI O3 (and now O4) video systems, getting really good fo
 
 What you need is a way to take that 4:3 full sensor footage and stretch it to 16:9 like the GoPro SuperView mode does.  This is where SooperView comes to the rescue.
 
-SooperView runs on Windows, Mac, Android, and iOS.
+SooperView runs on Windows, Mac, Android, and iOS.<br/>
 
-<img style='display:inline-block;width:600px;' src='data/screenshots/windows-settings.png' />
-<img style='display:inline-block;width:600px;' src='data/screenshots/windows-file-selector.png' />
-<img style='display:inline-block;width:600px;' src='data/screenshots/windows-encoding.png' />
+<img style='width:100%;' src='data/screenshots/windows-settings.png' />
+<img style='width:100%;' src='data/screenshots/SooperView-Dark-Settings.png' />
+<img style='width:100%;' src='data/screenshots/windows-file-selector.png' />
+<img style='width:100%;' src='data/screenshots/SooperView-Dark-FileSelector-Files.png' />
+<img style='width:50%;' src='data/screenshots/SooperView-Light-Process-1.png' />
+<img style='width:50%;' src='data/screenshots/SooperView-Dark-Process-2.png' />
